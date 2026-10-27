@@ -1,0 +1,31 @@
+### 1.5.0 | 2026-02-19
+- Added support for Turnstile sizing options (normal, flexible, and compact).
+- Updated the add-on to use the new [versioning system](https://docs.gravityforms.com/version-numbering/).
+- Fixed an issue where the Turnstile add-on incorrectly called the feed add-on class.
+- Fixed an issue where the Turnstile resources are being loaded on admin pages where they are not needed.
+
+### 1.4.0 | 2025-04-22
+- Updated the message that displays when you try to add multiple Turnstile fields to one form to use a dialog instead of an alert with Gravity Forms 2.9.0.
+- Updated the Turnstile field configuration message to use the alert component for better UI and consistency.
+- Fixed an issue where the widget is not properly rendered when the form contains fields with conditional logic.
+- Fixed code placement to be consistent with the WordPress coding standards.
+- Fixed an issue where the widget doesn't work properly when added to multiple different forms on the same page.
+
+### 1.3.0 | 2024-08-22
+- Updated the behaviour on multi-page forms, so Turnstile is rendered on the last page correctly.
+- Fixed field ID right-alignment in compact view when labels are left/right-aligned.
+- Fixed an issue where a JavaScript error can occur when 2 or more Turnstile fields are on the same page.
+
+### 1.2.0 | 2024-07-12
+- Fixed an issue where the Turnstile field can fail to render on some sites following a change to the Turnstile API.
+- Fixed an issue where the settings page doesn't display an error message when the secret key is invalid.
+- Fixed a deprecation notice with PHP 8.2+ when the Turnstile field can't render because of invalid keys.
+- Removed beta messaging for the Turnstile API.
+
+### 1.1.0 | 2023-11-22
+- Added support for the Gravity Forms 2.8 form editor compact view.
+- Updated the theme framework variables to be compatible with Gravity Forms 2.8.
+- Fixed a bug where an invisible Turnstile field always fails validation in a Conversational Form.
+
+### 1.0.0 | 2023-06-21
+- All new!

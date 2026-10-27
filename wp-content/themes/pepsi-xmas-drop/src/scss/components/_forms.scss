@@ -1,0 +1,118 @@
+.page-age-gate__form input[type='text'],
+.page-age-gate__form input[type='email'],
+.page-age-gate__form input[type='tel'],
+.page-age-gate__form input[type='date'] {
+  height: var(--pf-control-height) !important;
+  min-height: var(--pf-control-height) !important;
+  max-height: var(--pf-control-height) !important;
+  border-radius: var(--pf-control-radius) !important;
+}
+
+input[type='tel'] {
+  padding: 0 48px !important;
+}
+
+/* Native date overlay (createPfLoader's input swap)
+ * The TS in src/ui/native-date-overlay.ts toggles input.type between
+ * 'text' and 'date' on focus/blur to get the OS picker. Without locking CSS,
+ * each type uses its own browser defaults and the field jumps in size when
+ * focused. These rules force identical visual dimensions for both states
+ * across every GF form that uses the overlay.
+ */
+.ginput_container_date[data-native-date-overlay] > input[type='text'],
+.ginput_container_date[data-native-date-overlay] > input[type='date'] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 50px;
+  min-height: 50px;
+  max-height: 50px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0 18px;
+  border: none;
+  border-radius: 999px;
+  background: #fff;
+  color: #000;
+  font-family: 'PepsiOwners-Compressed', sans-serif;
+  font-size: 1.125rem;
+  line-height: 50px;
+  text-align: left;
+}
+
+.ginput_container_date[data-native-date-overlay] > input[type='text']::placeholder {
+  color: #999;
+}
+
+.ginput_container_date[data-native-date-overlay] > input[type='date']::-webkit-date-and-time-value {
+  font-family: 'PepsiOwners-Compressed', sans-serif;
+  font-size: 1.125rem;
+  line-height: 50px;
+  text-align: left;
+  margin: 0;
+  padding: 0;
+}
+
+.ginput_container_date[data-native-date-overlay] > input[type='date']::-webkit-datetime-edit {
+  font-family: 'PepsiOwners-Compressed', sans-serif;
+  font-size: 1.125rem;
+  line-height: 50px;
+  padding: 0;
+}
+
+/* iOS Safari placeholder fallback — type="date" inputs ignore the placeholder
+ * attribute, so when no date is picked we hide the empty datetime-edit chrome
+ * (the faint dd/mm/yyyy on iOS) and overlay our own readable placeholder. */
+.ginput_container_date[data-native-date-overlay][data-empty] {
+  position: relative;
+}
+
+/* Hide every empty-state sub-pseudo. Safari desktop paints the
+   day/month/year fields and the slash separators with their own pseudos
+   that don't inherit color from ::-webkit-datetime-edit, so the "00/00/0000"
+   skeleton was bleeding through behind our placeholder ::before. */
+.ginput_container_date[data-native-date-overlay][data-empty] > input[type='date']::-webkit-datetime-edit,
+.ginput_container_date[data-native-date-overlay][data-empty] > input[type='date']::-webkit-datetime-edit-fields-wrapper,
+.ginput_container_date[data-native-date-overlay][data-empty] > input[type='date']::-webkit-datetime-edit-text,
+.ginput_container_date[data-native-date-overlay][data-empty] > input[type='date']::-webkit-datetime-edit-month-field,
+.ginput_container_date[data-native-date-overlay][data-empty] > input[type='date']::-webkit-datetime-edit-day-field,
+.ginput_container_date[data-native-date-overlay][data-empty] > input[type='date']::-webkit-datetime-edit-year-field {
+  color: transparent;
+}
+
+/* While the user is editing, reveal the native MM/DD/YYYY chrome again so
+   what they type isn't hidden behind our placeholder pseudo. */
+.ginput_container_date[data-native-date-overlay][data-empty] > input[type='date']:focus::-webkit-datetime-edit,
+.ginput_container_date[data-native-date-overlay][data-empty] > input[type='date']:focus::-webkit-datetime-edit-fields-wrapper,
+.ginput_container_date[data-native-date-overlay][data-empty] > input[type='date']:focus::-webkit-datetime-edit-text,
+.ginput_container_date[data-native-date-overlay][data-empty] > input[type='date']:focus::-webkit-datetime-edit-month-field,
+.ginput_container_date[data-native-date-overlay][data-empty] > input[type='date']:focus::-webkit-datetime-edit-day-field,
+.ginput_container_date[data-native-date-overlay][data-empty] > input[type='date']:focus::-webkit-datetime-edit-year-field {
+  color: inherit;
+}
+
+.ginput_container_date[data-native-date-overlay][data-empty]::before {
+  /* Cover the whole input — Safari desktop's empty-state day/month/year sub
+     pseudos ignore `color: transparent` on the parent, so we paint over them
+     with our own opaque box instead of trying to hide them. */
+  content: attr(data-placeholder);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  background: #fff;
+  color: #999;
+  font-family: 'PepsiOwners-Compressed', sans-serif;
+  font-size: 1.125rem;
+  line-height: 1;
+  pointer-events: none;
+  border-radius: 999px;
+}
+
+/* Once the user focuses the date input the native MM/DD/YYYY chrome becomes
+   visible — hide the placeholder pseudo so it doesn't overlay it. Applies to
+   every form using the overlay (age gate, congrats, etc.). */
+.ginput_container_date[data-native-date-overlay][data-empty]:focus-within::before {
+  content: none;
+}

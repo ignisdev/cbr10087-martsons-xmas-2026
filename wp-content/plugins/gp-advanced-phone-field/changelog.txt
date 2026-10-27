@@ -1,0 +1,179 @@
+# Changelog
+
+## 1.1.13 | September 17, 2026
+
+- Fixed an issue where autofill on iPhones was skipping the Phone field when progressing through a form with GP Advanced Phone Field.
+
+## 1.1.12 | August 27, 2026
+
+- Fixed issue where GP Advanced Phone Field could break when `allowDropdown` was disabled.
+
+## 1.1.11 | July 28, 2026
+
+- Fixed a Gravity Forms 3.0 compatibility issue that could trigger a fatal error when an Advanced Phone Field failed validation.
+
+## 1.1.10 | February 4, 2026
+
+- Fixed issue where Administrative phone fields with Advanced Phone Field enabled would still show the country selection dropdown when populated via GP Populate Anything.
+
+## 1.1.9 | December 18, 2025
+
+- Fixed issue where latest `libphonenumber-for-php` update required PHP 8 or newer. Instead, we've brought in the latest metadata from Google's `libphonenumber` while retaining support for PHP 7.4.
+
+## 1.1.8 | December 17, 2025
+
+- Improved validation accuracy after submission by updating `libphonenumber-for-php` to `9.0.20`.
+
+## 1.1.7 | December 2, 2025
+
+- Fixed issue where the country dropdown was cut off when used with GP Page Transitions and the field was near the bottom of the form.
+
+## 1.1.6 | July 23, 2025
+
+- Updated upstream libraries to bring in latest phone number formats.
+- Added logging for failed phone number validation.
+
+## 1.1.5 | June 24, 2025
+
+- Fixed issue where the Advanced Phone Field country selector appeared behind Elementor popups on mobile devices.
+
+## 1.1.4 | May 14, 2025
+
+- Removed redundant check for Gravity Perks in preparation for Spellbook.
+- Added Spanish translations. Credit: Rafael Soler of rafaelsoler.es
+
+## 1.1.3 | January 15, 2025
+
+- Fixed an issue with hidden input of Advanced Phone Field.
+
+## 1.1.2 | December 10, 2024
+
+- Updated upstream libraries to bring in latest phone number formats.
+
+## 1.1.1 | October 1, 2024
+
+- Improved styling of Advanced Phone fields if using `gform_disable_css`.
+
+## 1.1 | September 19, 2024
+
+- Fixed PHP 8.2 deprecation notices.
+- Improved validation accuracy after submission by updating `libphonenumber-for-php` to `8.13.45`.
+- Updated `intl-tel-input` to version `24.5`. It was previously `18.5.3`. This improves validation and formatting accuracy on the frontend.
+
+## 1.0.26 | July 17, 2024
+
+- Fixed issue where Advanced Phone Fields that are dynamically populated without dialing codes would run into validation errors.
+
+## 1.0.25 | June 6, 2024
+
+- Fixed an issue where the default country setting would not be applied in some cases.
+
+## 1.0.24
+
+- Added [`gpapf_post_init`](https://gravitywiz.com/documentation/gpapf_post_init) JS action hook.
+
+## 1.0.23
+
+- Improved compatibility with GP Populate Anything by reinitializing `intl-tel-input` when Advanced Phone Fields are dynamically refreshed.
+
+## 1.0.22
+
+- Fixed regression with the Default Country setting not taking effect on the frontend.
+- Fixed styling of country selector after updating `intl-tel-input`.
+
+## 1.0.21
+
+- Fixed issue where regionless phone number (such as those starting with `800` or `844`) would fail validation on multi-page forms.
+- Updated `intl-tel-input` from  version `17.0.21` to `18.5.3`.
+- Fixed regression where automatic country selection was not working.
+
+## 1.0.20
+
+- Updated styles to work with GF 2.8 Theme Framework changes.
+
+## 1.0.19
+
+- Updated `giggsey/libphonenumber-for-php` from `8.12.54` to `8.13.23`.
+- Updated the default country to be `US` to help avoid issues with phone numbers without a country code.
+
+## 1.0.18
+
+- Fixed a potential PHP error on submission if the phone number cannot be parsed.
+
+## 1.0.17
+
+- Fixed a styling issue with Conversational Forms.
+
+## 1.0.16
+
+- Fixed issue with Advanced Phone Field labels not pointing to the right input in their `for` attributes.
+
+## 1.0.15
+
+- Added `geoIPFallbackCountry`, `geoIPCacheDuration`, and `ipInfoAPIToken` as accepted parameters in the [`gpapf_init_args`](https://gravitywiz.com/documentation/gpapf_init_args) filter hook.
+- Added `localStorage`-based caching to Geo IP lookups.
+- Improved internationalization of the dialing code list by using country names from Gravity Forms if the site/user language is not English.
+
+## 1.0.14
+
+- Added new capabilities to grant/deny access to GP Advanced Phone Field settings and to uninstall it.
+
+## 1.0.13
+
+- Added German translation. Credit: Brian Haas of digicube.li.
+
+## 1.0.12
+
+- Added new [`gpapf_intltelinput_options`](https://gravitywiz.com/documentation/gpapf_intltelinput_options) JavaScript filter hook.
+- Updated `intl-tel-input` library from version 17.0.13 to 17.0.21.
+
+## 1.0.11
+
+- Updated validation logic to use the `gform_field_validation` filter hook rather than `gform_validation`.
+- Improved validation to only clear out the value provided in Advanced Phone Fields if the value is clearly not a number and not just invalid.
+
+## 1.0.10
+
+- Added compatibility for Gravity Forms' new Theme Framework.
+
+## 1.0.9
+
+- Fixed an issue with empty phone field values causing PHP errors in some situations.
+
+## 1.0.8
+
+- Added `gpapf_merge_tag_value` filter to modify phone value rendered with the merge tag and its modifiers.
+
+## 1.0.7
+
+- Added support for `:nationalNumberFormatted` modifier to display numbers in the visual format generally accepted in its nation.
+
+## 1.0.6
+
+- Fixed a formatting issue when invalid advanced phone field value was entered.
+
+## 1.0.5
+
+- Improved handling of RTL languages in country list.
+
+## 1.0.4
+
+- Added WebP versions of the flag sprites to improve performance. PNG versions of the sprites are still in place as a fallback.
+
+## 1.0.3
+
+- Fixed issue where the country dropdown could initialize more than one time and cause the dropdown to show multiple times for a given Phone field.
+- Updated plugin headers with correct Description and Plugin URI.
+
+## 1.0.2
+
+- Added support for using the "Custom Validation Message" setting with Phone fields that have Advanced Phone Field enabled.
+
+## 1.0.1
+
+- Fixed issue where the phone value could be lost on multi-page forms while navigating pages.
+- Fixed issue with validation where the phone field would be validated even if hidden.
+
+## 1.0-beta-1
+
+- Hello World!

@@ -1,0 +1,122 @@
+/* ─── Photo page ───────────────────────────────────────────────────────────────
+   Same stage model as the age gate (_age-gate.scss): an 829 × 1793 canvas —
+   the size of the BPM `photo` bg artwork — scaled to fit the viewport and
+   top-aligned, so nothing scrolls. Sizes are design px × --u (stage width ÷
+   829); the "at reference" notes are the 440 × 956 values (1u ≈ 0.519px).
+   The bg URL is passed inline as --photo-bg by page-photo.php. */
+
+.page-photo {
+	position: relative;
+	height: 100dvh;
+	overflow: hidden;
+	background-color: #000; // letterbox around the stage
+
+	--pp-bw: min(100vw, 430px);
+	--pp-sw: min(var(--pp-bw), 100dvh * 829 / 1793);
+	--u: calc(var(--pp-sw) / 829);
+
+	background-image: var(--photo-bg);
+	background-repeat: no-repeat;
+	background-size: var(--pp-sw) auto;
+	background-position: 50% 0;
+
+	--pf-control-height: calc(var(--u) * 96);    // 50px at reference
+	--pf-control-font-size: calc(var(--u) * 39); // 20px at reference
+}
+
+.page-photo__scene {
+	width: var(--pp-sw);
+	aspect-ratio: 829 / 1793;
+	margin-inline: auto;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.page-photo__upload-container {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: calc(var(--u) * 31);                   // 16px at reference
+}
+
+.page-photo__title {
+	color: #fff;
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: 30px;                            // fixed, matches the age-gate contact title
+	font-weight: 400;
+	line-height: 1;
+	text-transform: uppercase;
+	text-align: center;
+	text-shadow: 0 calc(var(--u) * 4) calc(var(--u) * 23) rgba(0, 0, 0, 0.78);
+}
+
+.page-photo__camera {
+	position: relative;
+	width: calc(var(--u) * 386);                // 200px at reference
+	height: calc(var(--u) * 540);               // 280px at reference
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: calc(var(--u) * 3) solid #fff;
+	border-radius: calc(var(--u) * 31);
+	background: rgba(0, 0, 0, 0.45);
+	overflow: hidden;
+}
+
+.page-photo__camera-icon {
+	width: calc(var(--u) * 154);                // 80px at reference
+	height: auto;
+}
+
+.page-photo__camera-icon--default svg {
+	display: block;
+	width: calc(var(--u) * 77);                 // 40px at reference
+	height: auto;
+	margin-inline: auto;
+}
+
+.page-photo__preview {
+	position: absolute;
+	inset: 0;
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+// Off-screen but still rendered — browsers refuse to open a file picker for
+// display:none / visibility:hidden inputs. photo.ts clicks these.
+.page-photo #photoInput,
+.page-photo #gf-photo-form {
+	position: absolute;
+	left: -9999px;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.page-photo__upload-btn {
+	width: calc(var(--u) * 189) !important;     // 98px at reference
+	padding: 0 !important;
+	background: var(--pf-color-primary) !important;
+	color: #fff !important;
+}
+
+.page-photo__upload-btn:disabled {
+	opacity: 0.55;
+}
+
+.page-photo__terms-link {
+	margin-top: 0;
+	font-size: calc(var(--u) * 25);             // 0.8rem at reference
+}
+
+.page-photo__notice {
+	color: #fff;
+	font-size: calc(var(--u) * 27);
+	text-align: center;
+}

@@ -1,0 +1,92 @@
+// ── Page transition overlay ────────────────────────────────────────────────────
+// Fades itself out in CSS as soon as the page paints — no waiting for JS — so
+// a page is visible the moment its HTML + CSS arrive. transitions.ts fades it
+// back in (inline styles, animation cleared) only for outbound navigations.
+// /game/ skips it: the server-rendered game loader is already a black screen.
+
+#pf-page-overlay {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	background: #000;
+	z-index: 9999;
+	opacity: 0;
+	pointer-events: none;
+	animation: pf-overlay-out 0.2s ease-out both;
+}
+
+body.page-template-page-game-php #pf-page-overlay {
+	animation: none;
+}
+
+@keyframes pf-overlay-out {
+	from { opacity: 1; }
+	to   { opacity: 0; }
+}
+
+// ── Entrance keyframe ──────────────────────────────────────────────────────────
+
+@keyframes pf-enter {
+	from {
+		opacity: 0;
+		transform: translateY(18px) scale(0.97);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+// ── Photo ─────────────────────────────────────────────────────────────────────
+
+body.page-template-page-photo-php {
+	.page-photo__title {
+		animation: pf-enter 0.55s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+	}
+
+	.page-photo__camera {
+		animation: pf-enter 0.55s 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+	}
+
+	.page-photo__upload-btn {
+		animation: pf-enter 0.55s 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+	}
+}
+
+// ── Age gate ──────────────────────────────────────────────────────────────────
+
+body.page-template-page-age-gate-php {
+	.scene__hero,
+	.page-age-gate__hero {
+		animation: pf-enter 0.55s 0.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+	}
+
+	.page-age-gate__headline-wrap {
+		animation: pf-enter 0.55s 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+	}
+
+	.page-age-gate__form {
+		animation: pf-enter 0.55s 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+	}
+}
+
+// ── How to play ───────────────────────────────────────────────────────────────
+
+body.page-template-page-how-to-play-php {
+	.page-how-to-play__panel--instructions {
+		animation: pf-enter 0.55s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+	}
+}
+
+// ── Congratulations / non-winner ──────────────────────────────────────────────
+
+body.page-template-page-congratulations-php,
+body.page-template-page-non-winner-php,
+body.page-template-page-prize-paid-php,
+body.page-template-page-thanks-php {
+	.congrats-page {
+		animation: pf-enter 0.5s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+	}
+}

@@ -1,0 +1,14 @@
+# Force binary treatment for 3D model and image formats.
+# Prevents Git from applying line-ending conversion or text encoding
+# which corrupts binary files (produces ef bf bd replacement characters).
+*.glb   binary
+*.gltf  binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.svg   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary

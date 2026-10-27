@@ -1,0 +1,9 @@
+// =============================================================================
+// _non-winner.scss — Non-winner / sorry state
+// =============================================================================
+
+.scene--non-winner {
+  .scene__headline {
+    opacity: 0.85; // Slightly muted for the losing state
+  }
+}

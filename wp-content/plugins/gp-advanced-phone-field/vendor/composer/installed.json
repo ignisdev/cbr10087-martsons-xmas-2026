@@ -1,0 +1,265 @@
+{
+    "packages": [
+        {
+            "name": "giggsey/libphonenumber-for-php",
+            "version": "dev-gp-advanced-phone-field",
+            "version_normalized": "dev-gp-advanced-phone-field",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/gravitywiz/libphonenumber-for-php.git",
+                "reference": "7d275b5b2ecb38f4515d512c87a73a50a1b000cc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/gravitywiz/libphonenumber-for-php/zipball/7d275b5b2ecb38f4515d512c87a73a50a1b000cc",
+                "reference": "7d275b5b2ecb38f4515d512c87a73a50a1b000cc",
+                "shasum": ""
+            },
+            "require": {
+                "giggsey/locale": "^2.0",
+                "php": "^7.4|^8.0",
+                "symfony/polyfill-mbstring": "^1.17"
+            },
+            "replace": {
+                "giggsey/libphonenumber-for-php-lite": "self.version"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.64",
+                "pear/pear-core-minimal": "^1.10",
+                "pear/pear_exception": "^1.0",
+                "pear/versioncontrol_git": "^0.7",
+                "phing/phing": "^3.0",
+                "php-coveralls/php-coveralls": "^2.0",
+                "phpunit/phpunit": "^9.6",
+                "symfony/console": "^v5.2",
+                "symfony/var-exporter": "^5.2"
+            },
+            "time": "2025-12-18T15:03:27+00:00",
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "8.x-dev"
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "libphonenumber\\": "src/"
+                },
+                "exclude-from-classmap": [
+                    "/src/data/",
+                    "/src/carrier/data/",
+                    "/src/geocoding/data/",
+                    "/src/timezone/data/"
+                ]
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "libphonenumber\\buildtools\\": "build/",
+                    "libphonenumber\\Tests\\": "tests/"
+                }
+            },
+            "archive": {
+                "exclude": [
+                    "build/",
+                    "docs/",
+                    "tests/",
+                    ".github/",
+                    ".editorconfig",
+                    ".gitattributes",
+                    ".gitignore",
+                    ".styleci.yml",
+                    ".travis.yml",
+                    "build.xml",
+                    "libphonenumber-for-php.spec",
+                    "phpunit.xml.dist",
+                    "phpunit",
+                    "src/CountryCodeToRegionCodeMapForTesting.php",
+                    "libphonenumber-data-dir"
+                ]
+            },
+            "scripts": {
+                "cs": [
+                    "vendor/bin/php-cs-fixer fix"
+                ],
+                "test": [
+                    "vendor/bin/phpunit"
+                ],
+                "metadata": [
+                    "vendor/bin/phing compile"
+                ]
+            },
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Joshua Gigg",
+                    "email": "giggsey@gmail.com",
+                    "homepage": "https://giggsey.com/"
+                }
+            ],
+            "description": "PHP Port of Google's libphonenumber",
+            "homepage": "https://github.com/giggsey/libphonenumber-for-php",
+            "keywords": [
+                "geocoding",
+                "geolocation",
+                "libphonenumber",
+                "mobile",
+                "phonenumber",
+                "validation"
+            ],
+            "support": {
+                "source": "https://github.com/giggsey/libphonenumber-for-php",
+                "issues": "https://github.com/giggsey/libphonenumber-for-php/issues"
+            },
+            "install-path": "../giggsey/libphonenumber-for-php"
+        },
+        {
+            "name": "giggsey/locale",
+            "version": "2.7.0",
+            "version_normalized": "2.7.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/giggsey/Locale.git",
+                "reference": "a5c65ea3c2630f27ccb78977990eefbee6dd8f97"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/giggsey/Locale/zipball/a5c65ea3c2630f27ccb78977990eefbee6dd8f97",
+                "reference": "a5c65ea3c2630f27ccb78977990eefbee6dd8f97",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4|^8.0"
+            },
+            "require-dev": {
+                "ext-json": "*",
+                "friendsofphp/php-cs-fixer": "^3.64",
+                "pear/pear-core-minimal": "^1.9",
+                "pear/pear_exception": "^1.0",
+                "pear/versioncontrol_git": "^0.5",
+                "phing/phing": "^2.7",
+                "php-coveralls/php-coveralls": "^2.0",
+                "phpunit/phpunit": "^8.5|^9.5",
+                "symfony/console": "^5.0|^6.0",
+                "symfony/filesystem": "^5.0|^6.0",
+                "symfony/finder": "^5.0|^6.0",
+                "symfony/process": "^5.0|^6.0",
+                "symfony/var-exporter": "^5.2|^6.0"
+            },
+            "time": "2024-11-04T11:18:07+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "Giggsey\\Locale\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Joshua Gigg",
+                    "email": "giggsey@gmail.com",
+                    "homepage": "https://giggsey.com/"
+                }
+            ],
+            "description": "Locale functions required by libphonenumber-for-php",
+            "support": {
+                "issues": "https://github.com/giggsey/Locale/issues",
+                "source": "https://github.com/giggsey/Locale/tree/2.7.0"
+            },
+            "install-path": "../giggsey/locale"
+        },
+        {
+            "name": "symfony/polyfill-mbstring",
+            "version": "v1.32.0",
+            "version_normalized": "1.32.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-mbstring.git",
+                "reference": "6d857f4d76bd4b343eac26d6b539585d2bc56493"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/6d857f4d76bd4b343eac26d6b539585d2bc56493",
+                "reference": "6d857f4d76bd4b343eac26d6b539585d2bc56493",
+                "shasum": ""
+            },
+            "require": {
+                "ext-iconv": "*",
+                "php": ">=7.2"
+            },
+            "provide": {
+                "ext-mbstring": "*"
+            },
+            "suggest": {
+                "ext-mbstring": "For best performance"
+            },
+            "time": "2024-12-23T08:48:59+00:00",
+            "type": "library",
+            "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
+                }
+            },
+            "installation-source": "dist",
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Mbstring\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill for the Mbstring extension",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "mbstring",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-mbstring/tree/v1.32.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "install-path": "../symfony/polyfill-mbstring"
+        }
+    ],
+    "dev": false,
+    "dev-package-names": []
+}

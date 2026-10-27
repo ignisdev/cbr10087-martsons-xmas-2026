@@ -1,0 +1,24 @@
+// =============================================================================
+// _fonts.scss — Web font declarations
+//
+// This file is intentionally lean. Fonts come from one of three sources:
+//   1. Google Fonts (linked in assets.php — no @font-face needed here)
+//   2. Custom font files placed in /fonts/ by the child theme
+//   3. System font stack (no declaration needed)
+//
+// For custom fonts, uncomment and adapt the template below.
+// Place .woff2 and .woff files in wp-content/themes/<child-theme>/fonts/
+// =============================================================================
+
+/*
+// Example custom font declaration:
+@font-face {
+  font-family: 'BrandFont';
+  src:
+    url('../fonts/BrandFont-Bold.woff2') format('woff2'),
+    url('../fonts/BrandFont-Bold.woff')  format('woff');
+  font-weight:  700;
+  font-style:   normal;
+  font-display: swap;
+}
+*/

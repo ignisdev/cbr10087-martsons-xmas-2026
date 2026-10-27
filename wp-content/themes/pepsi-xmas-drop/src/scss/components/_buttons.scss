@@ -1,0 +1,35 @@
+.pepsi-pill-button,
+.page-age-gate__form .gform_button,
+.page-age-gate__form .gform_next_button,
+.page-age-gate__form .gform_previous_button {
+  -webkit-appearance: none;
+  appearance: none;
+  height: var(--pf-control-height) !important;
+  min-height: var(--pf-control-height) !important;
+  max-height: var(--pf-control-height) !important;
+  box-sizing: border-box !important;
+  line-height: var(--pf-control-height) !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  border: none !important;
+  border-radius: var(--pf-control-radius) !important;
+  font-family: 'PepsiOwners-Compressed', sans-serif !important;
+  font-size: var(--pf-control-font-size) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: transform 0.18s ease, opacity 0.18s ease !important;
+
+  &:hover:not(:disabled) {
+    transform: scale(1.04);
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+    transition-duration: 0.08s !important;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}

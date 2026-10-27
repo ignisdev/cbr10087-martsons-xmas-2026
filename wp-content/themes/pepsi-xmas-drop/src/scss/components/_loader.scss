@@ -1,0 +1,147 @@
+/* Canonical site-wide loader (createPfLoader).
+   Used for the game-page boot screen. */
+
+.pf-loader {
+	position: fixed;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #000;
+	z-index: 1500;
+	transition: opacity 0.35s ease;
+}
+
+.pf-loader.is-hidden {
+	opacity: 0;
+	pointer-events: none;
+}
+
+// /game/ boot loader: invisible unless boot is still running after 0.4s
+// (DEFERRED_REVEAL_MS in loader.ts) — pure CSS, so it holds even if the game
+// script itself is what's slow. A fast (cached) boot removes it before then.
+.pf-loader--deferred {
+	opacity: 0;
+	pointer-events: none;
+	transition: none;   // no fade from an unstyled first frame — animations only
+	animation: pf-loader-reveal 0.2s ease 0.4s forwards;
+}
+
+// The reveal animation pins opacity, so the .is-hidden transition can't run —
+// fade out with an animation instead.
+.pf-loader--deferred.is-hidden {
+	animation: pf-loader-conceal 0.35s ease forwards;
+}
+
+@keyframes pf-loader-reveal {
+	to {
+		opacity: 1;
+		pointer-events: auto;
+	}
+}
+
+@keyframes pf-loader-conceal {
+	from { opacity: 1; }
+	to   { opacity: 0; }
+}
+
+.pf-loader__inner {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+}
+
+.pf-loader__ball {
+	position: relative;
+	width: 72px;
+	height: 72px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+// The bauble artwork, swinging from its hanging loop (top-left of the image).
+.pf-loader__image {
+	width: 64px;
+	height: 64px;
+	object-fit: contain;
+	animation: pf-loader-image-swing 1.1s ease-in-out infinite alternate;
+	transform-origin: 18% 12%;
+}
+
+.pf-loader__ball.is-still .pf-loader__image {
+	animation: none;
+}
+
+@keyframes pf-loader-image-swing {
+	from { transform: rotate(-20deg); }
+	to   { transform: rotate(20deg); }
+}
+
+// Fallback when no loader_image is configured: Pepsi-blue bauble drawn in CSS.
+.pf-loader__bauble {
+	position: relative;
+	width: 52px;
+	height: 52px;
+	margin-top: 10px;
+	border-radius: 50%;
+	background: radial-gradient(circle at 35% 30%, #6f8cff 0%, #0025ff 45%, #001178 100%);
+	animation: pf-loader-swing 1.1s ease-in-out infinite alternate;
+	transform-origin: 50% -10px;
+
+	&::before {
+		content: '';
+		position: absolute;
+		top: -9px;
+		left: 50%;
+		width: 14px;
+		height: 9px;
+		margin-left: -7px;
+		border-radius: 2px;
+		background: #c9c9c9;
+	}
+
+	&::after {
+		content: '';
+		position: absolute;
+		inset: 40% 0 auto;
+		height: 7px;
+		background: #e2001a;
+	}
+}
+
+.pf-loader__ball.is-still .pf-loader__bauble {
+	animation: none;
+}
+
+.pf-loader__label {
+	color: #fff;
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: 16px;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	text-align: center;
+}
+
+.pf-loader__sublabel {
+	color: #fff;
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: 13px;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	text-align: center;
+	opacity: 0.85;
+	margin-top: 4px;
+
+	// Collapse when empty so the inner box stays vertically balanced when
+	// only the main label is set.
+	&:empty {
+		display: none;
+	}
+}
+
+@keyframes pf-loader-swing {
+	from { transform: rotate(-14deg); }
+	to   { transform: rotate(14deg); }
+}

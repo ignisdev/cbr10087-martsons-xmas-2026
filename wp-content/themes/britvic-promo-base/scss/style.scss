@@ -1,0 +1,40 @@
+// =============================================================================
+// style.scss — Main SCSS entry point for britvic-promo-base
+//
+// Import order matters:
+//   1. Tokens (CSS custom properties — must come first)
+//   2. Global reset
+//   3. Layout primitives
+//   4. Utilities (loading, etc.)
+//   5. Components (buttons, forms, modal)
+//   6. Page-specific styles
+// =============================================================================
+
+// 1. Tokens
+@use 'tokens';
+
+// 1b. Web fonts (custom @font-face, if required — see _fonts.scss)
+@use 'fonts';
+
+// 2. Global
+@use 'global';
+
+// 3. Layout
+@use 'layout';
+
+// 4. Utilities
+@use 'loading';
+
+// 5. Components
+@use 'components/buttons';
+@use 'components/forms';
+@use 'components/modal';
+
+// 6. Pages
+@use 'pages/age-gate';
+@use 'pages/photo';
+@use 'pages/game';
+@use 'pages/winner';
+@use 'pages/non-winner';
+@use 'pages/thanks';
+@use 'pages/closed';

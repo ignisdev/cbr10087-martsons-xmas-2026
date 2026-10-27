@@ -1,0 +1,114 @@
+html {
+	height: 100%;
+	height: -webkit-fill-available;
+	background: #111;
+}
+
+body {
+	width: 100%;
+	height: auto;
+	min-height: 100svh;
+	min-height: 100dvh;
+	overflow-x: hidden;
+	overflow-y: auto;
+	background: #000;
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+/* Game page must not scroll — canvas + score header occupy the viewport
+   and any body scroll would steal the swipe gestures from the canvas. */
+body.page-template-page-game-php {
+	height: 100%;
+	overflow: hidden;
+}
+
+@media (min-width: 431px) {
+	body {
+		max-width: 430px;
+		margin-inline: auto;
+	}
+}
+
+/* Standard layout — flex column with footer pinned to viewport bottom.
+   Used on every page. Pages without a footer (game, age-gate) simply
+   skip rendering .scene__footer in footer.php. */
+
+:root {
+	--pf-footer-h: 80px;
+}
+
+.site-wrapper {
+	position: relative;
+	width: 100%;
+	min-height: 100dvh;
+	display: flex;
+	flex-direction: column;
+	background-repeat: no-repeat;
+}
+
+.site-wrapper > main {
+	flex: 1 0 auto;
+	position: relative;
+	min-height: 0;
+}
+
+.site-wrapper > .scene__footer {
+	position: relative;
+	flex: 0 0 auto;
+	margin-top: auto;
+	height: var(--pf-footer-h);
+	display: flex;
+	align-items: flex-end;
+	justify-content: center;
+	padding-bottom: 30px;
+	z-index: 10;
+}
+
+/* When .scene appears inside a main with a footer, leave room for the footer
+   so its absolutely-positioned children (e.g. how-to-play panels) don't sit
+   under the logo. Pages without a footer can override this on their scene. */
+.scene {
+	min-height: calc(100dvh - var(--pf-footer-h));
+	display: flex;
+	flex-direction: column;
+	// justify-content: center;
+}
+
+.prize-status-card {
+	padding:14% 24px 0; 
+	text-align: center;
+}
+
+.prize-status-card h1 {
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: clamp(4rem, 20vw, 7rem);
+	font-weight: 400;
+	line-height: 1;
+	text-transform: uppercase;
+	color: #fff;
+	white-space: nowrap;
+	margin-bottom: 40px;
+}
+
+.prize-status-card p{
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: clamp(1rem, 5vw, 1.15rem);
+	line-height: 1.1;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 1);
+	margin: 0.4rem 0;
+}
+
+.prize-status-card a {
+	color: #ffffff;
+}
+
+.page-payout-failed__title, .page-stripe-verify__title {
+	font-size: clamp(2rem, 14vw, 3.5rem)!important;
+}

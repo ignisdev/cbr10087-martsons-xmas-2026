@@ -1,0 +1,18 @@
+@use './tokens';
+@use './utilities';
+@use './base/fonts';
+@use './base/reset';
+@use './base/layout';
+@use './components/buttons';
+@use './components/forms';
+@use './components/loader';
+@use './components/modal';
+@use './components/transitions';
+@use './pages/game';
+@use './pages/age-gate';
+@use './pages/photo';
+@use './pages/how-to-play';
+@use './pages/congrats';
+@use './legacy/base-legacy';
+
+/* Legacy campaign styles now flow through SASS pipeline via scss/legacy/_base-legacy.scss. */

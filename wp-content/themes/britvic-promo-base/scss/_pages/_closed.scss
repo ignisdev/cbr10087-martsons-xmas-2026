@@ -1,0 +1,11 @@
+// =============================================================================
+// _closed.scss — Competition closed page
+// =============================================================================
+
+.scene--closed {
+  justify-content: center; // Vertically centre the message
+
+  .scene__headline {
+    font-size: var(--text-2xl);
+  }
+}

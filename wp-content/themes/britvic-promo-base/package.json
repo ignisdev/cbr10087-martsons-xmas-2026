@@ -1,0 +1,34 @@
+{
+  "name": "britvic-promo-base",
+  "version": "1.0.0",
+  "description": "Britvic Promotions parent theme — build pipeline",
+  "private": true,
+  "scripts": {
+    "dev":   "gulp watch",
+    "build": "gulp build",
+    "prod":  "NODE_ENV=production gulp build"
+  },
+  "devDependencies": {
+    "@babel/core":              "^7.24.0",
+    "@babel/preset-env":        "^7.24.0",
+    "@rollup/plugin-babel":     "^6.0.4",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-replace":   "^5.0.5",
+    "gulp":                     "^4.0.2",
+    "gulp-autoprefixer":        "^9.0.0",
+    "gulp-clean-css":           "^4.3.0",
+    "gulp-rename":              "^2.0.0",
+    "gulp-sass":                "^5.1.0",
+    "gulp-sourcemaps":          "^3.0.0",
+    "rollup":                   "^4.14.0",
+    "sass":                     "^1.75.0"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5"
+  },
+  "browserslist": [
+    "last 2 versions",
+    "not dead",
+    "> 0.5%"
+  ]
+}

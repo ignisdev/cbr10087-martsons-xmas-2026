@@ -1,0 +1,683 @@
+# Copyright (C) 2026 Gravity Wiz
+# This file is distributed under the GPL2.
+msgid ""
+msgstr ""
+"Project-Id-Version: Spellbook 3.0.31\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/cloned-perk-nPXehvyVFE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-09-30T19:23:42+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.10.0\n"
+"X-Domain: spellbook\n"
+
+#. Plugin Name of the plugin
+#: spellbook.php
+#: class-gravityperks.php:231
+#: class-gravityperks.php:1224
+#: class-gravityperks.php:1508
+msgid "Spellbook"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: spellbook.php
+msgid "https://gravitywiz.com/"
+msgstr ""
+
+#. Description of the plugin
+#: spellbook.php
+msgid "Spellbook will allow you to install and update all other Gravity Wiz plugins directly from your WordPress admin. It feels like magic. ✨"
+msgstr ""
+
+#. Author of the plugin
+#: spellbook.php
+msgid "Gravity Wiz"
+msgstr ""
+
+#: admin/manage_perks.php:50
+msgid "Settings saved successfully."
+msgstr ""
+
+#: admin/manage_perks.php:52
+msgid "Settings were not saved."
+msgstr ""
+
+#: admin/manage_perks.php:56
+msgid "%s Settings"
+msgstr ""
+
+#: admin/manage_perks.php:104
+msgid "Save Settings"
+msgstr ""
+
+#: class-gravityperks.php:277
+msgid "Auto-updates disabled; enter %s license in Spellbook to enable."
+msgstr ""
+
+#: class-gravityperks.php:282
+msgid "Auto-updates disabled; register %s in Spellbook."
+msgstr ""
+
+#: class-gravityperks.php:287
+msgid "Auto-updates disabled; %s license has expired."
+msgstr ""
+
+#: class-gravityperks.php:292
+msgid "Auto-updates disabled; free plugins require a license or email to enable auto-updates."
+msgstr ""
+
+#: class-gravityperks.php:528
+msgid "Current Gravity Forms version (%1$s) does not meet minimum Gravity Forms version requirement (%2$s)."
+msgstr ""
+
+#: class-gravityperks.php:531
+msgid "Gravity Forms %1$s or greater is required. Activate it now or %2$spurchase it today!%3$s"
+msgstr ""
+
+#: class-gravityperks.php:537
+msgid "%1$s requires WordPress %2$s or greater. You must upgrade WordPress in order to use this perk."
+msgstr ""
+
+#: class-gravityperks.php:540
+msgid "Spellbook requires WordPress %1$s or greater. You must upgrade WordPress in order to use Spellbook."
+msgstr ""
+
+#: class-gravityperks.php:545
+msgid "%1$s requires Spellbook %2$s or greater. Activate it now or %3$spurchase it today!%4$s"
+msgstr ""
+
+#: class-gravityperks.php:589
+msgid "Enter your license for %1$s in <a href=\"%2$s\">Spellbook</a> to receive access to automatic upgrades and support for this %3$s. Need a license key? <a href=\"%4$s\" target=\"_blank\">Purchase one now.</a>"
+msgstr ""
+
+#: class-gravityperks.php:605
+msgid "Register %1$s in <a href=\"%2$s\">Spellbook</a> to receive access to automatic upgrades and support for this %3$s."
+msgstr ""
+
+#: class-gravityperks.php:616
+msgid "Your license for %1$s has expired. <a href=\"%2$s\" target=\"_blank\">Renew</a> to receive access to automatic upgrades and support for this %3$s."
+msgstr ""
+
+#: class-gravityperks.php:631
+#: class-gravityperks.php:865
+msgid "Updating free plugins in Spellbook requires a license or email. <a href=\"%1$s\" target=\"_blank\">Enter in Spellbook</a>"
+msgstr ""
+
+#: class-gravityperks.php:844
+msgid "Your %1$s license is invalid or missing. <a href=\"%2$s\" target=\"_blank\">Enter in Spellbook</a> or <a href=\"%3$s\" target=\"_blank\">Buy License</a>."
+msgstr ""
+
+#: class-gravityperks.php:852
+msgid "%1$s is unregistered. <a href=\"%2$s\" target=\"_blank\">Register in Spellbook</a>"
+msgstr ""
+
+#: class-gravityperks.php:857
+msgid "Your %1$s license has expired. <a href=\"%2$s\" target=\"_blank\">Renew License</a>"
+msgstr ""
+
+#: class-gravityperks.php:888
+msgid "<strong>Uh-oh!</strong> We ran into a problem when updating your Gravity Wiz plugins."
+msgstr ""
+
+#: class-gravityperks.php:889
+msgid "<strong>Uh-oh!</strong> We ran into some problems when updating your Gravity Wiz plugins."
+msgstr ""
+
+#: class-gravityperks.php:905
+msgid "Manage in Spellbook"
+msgstr ""
+
+#: class-gravityperks.php:1006
+msgid "<strong>Spellbook</strong> must be network activated before a <strong>perk</strong> can be network activated."
+msgstr ""
+
+#: class-gravityperks.php:1114
+msgid "Oops! Your site is having some trouble communicating with our API."
+msgstr ""
+
+#: class-gravityperks.php:1115
+msgid "Let's get this fixed."
+msgstr ""
+
+#: class-gravityperks.php:1572
+#: class-gravityperks.php:1576
+msgid "Perks"
+msgstr ""
+
+#: includes/api/class-rest-license-controller.php:166
+msgid "The license could not be validated. Please try again."
+msgstr ""
+
+#: includes/api/class-rest-license-controller.php:177
+msgid "The provided license key is invalid."
+msgstr ""
+
+#: includes/api/class-rest-license-controller.php:201
+#: includes/api/class-rest-license-controller.php:217
+msgid "Your license has been upgraded to the Wiz Bundle!"
+msgstr ""
+
+#: includes/api/class-rest-license-controller.php:227
+msgid "The provided license key does not match this product."
+msgstr ""
+
+#: includes/api/class-rest-license-controller.php:238
+msgid "License key is valid"
+msgstr ""
+
+#: includes/api/class-rest-license-controller.php:256
+msgid "Failed to deactivate license."
+msgstr ""
+
+#: includes/api/class-rest-license-controller.php:263
+msgid "License deactivated successfully"
+msgstr ""
+
+#: includes/api/class-rest-license-controller.php:280
+msgid "Failed to register product."
+msgstr ""
+
+#: includes/api/class-rest-license-controller.php:290
+msgid "Product registered successfully"
+msgstr ""
+
+#: includes/api/class-rest-license-controller.php:312
+msgid "Failed to deregister product."
+msgstr ""
+
+#: includes/api/class-rest-license-controller.php:319
+msgid "Product deregistered successfully"
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:149
+msgid "Plugin is not installed."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:158
+#: includes/api/class-rest-products-controller.php:335
+#: includes/api/class-rest-products-controller.php:538
+msgid "This plugin can only be managed from the network admin's Plugins page."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:188
+msgid "Failed to remove plugin."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:243
+msgid "Plugin is already installed."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:252
+msgid "No download URL available for this plugin."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:295
+msgid "Plugin installation failed for an unknown reason."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:326
+msgid "Plugin is already inactive."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:373
+msgid "Plugin is already active."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:382
+msgid "Plugin must be installed before it can be activated."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:483
+#: includes/api/class-rest-products-controller.php:508
+#: includes/api/class-rest-products-controller.php:695
+msgid "Plugin not found."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:529
+msgid "Plugin must be installed before it can be updated."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:553
+msgid "No update available for this plugin."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:602
+msgid "Plugin update failed for an unknown reason."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:613
+msgid "Plugin updated but reactivation failed: "
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:718
+msgid "Plugin details not found."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:802
+msgid "Unique identifier for the plugin."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:807
+msgid "Plugin name."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:811
+msgid "Plugin version."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:815
+msgid "Available update version."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:819
+msgid "Plugin slug."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:823
+msgid "Plugin file path."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:827
+msgid "Plugin file path (alias for backwards compatibility)."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:831
+msgid "Plugin homepage URL."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:836
+msgid "Documentation URL."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:841
+msgid "Plugin sections including description and changelog."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:849
+msgid "Plugin banner images."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:863
+msgid "Plugin icons."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:877
+msgid "Plugin categories."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:882
+msgid "Whether the plugin is installed."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:886
+msgid "Whether the plugin is active."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:890
+msgid "Plugin type."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:895
+msgid "Last updated date."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:899
+msgid "Download URL for the plugin."
+msgstr ""
+
+#: includes/api/class-rest-products-controller.php:904
+msgid "Whether the plugin has settings."
+msgstr ""
+
+#: includes/class-gwapi.php:311
+msgid "<strong>Important Note!</strong> GP Google Sheets has been converted to GC Google Sheets"
+msgstr ""
+
+#: includes/class-gwapi.php:315
+msgid "GC Google Sheets has been activated."
+msgstr ""
+
+#: model/perk.php:95
+msgid "The file for this perk does not exist."
+msgstr ""
+
+#: model/perk.php:120
+msgid "There is no class for this perk."
+msgstr ""
+
+#: model/perk.php:136
+msgid "%s is not a perk."
+msgstr ""
+
+#. translators: placeholder is perk name
+#: model/perk.php:371
+msgid "Uh-oh! <strong>%s</strong> needs your attention."
+msgstr ""
+
+#: model/perk.php:644
+msgid "There was an issue deleting this perk. The perk directory was not available."
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Oops! Something went wrong."
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "We've encountered an unexpected error. Please try refreshing the page."
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "If this error persists, please contact"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Gravity Wiz Support"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Refresh Page"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Updating..."
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Update"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Registering..."
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Register to Update"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Register"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Upgrade License to Update"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Upgrade License to Register"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Enter License to Update"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Enter License to Register"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Unregistered"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Settings"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Documentation"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Delete"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Legacy free plugin—delete to manage in Spellbook."
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Active"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Inactive"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Not Installed"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Toggle Perk"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Installing..."
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Install"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Upgrade to Install"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Buy License"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Gravity Perks Settings"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Changelog"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Loading changelog..."
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Changelog not available"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Delete Plugin"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "How would you like to delete %s?"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Are you sure you want to delete %s?"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Deleting..."
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Delete (Keep Data)"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Uninstalling..."
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Uninstall (Delete Data)"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Yes"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "No"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Unable to load products. Our server may be temporarily unavailable."
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "If this persists, please contact"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Try Again"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Update Available"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Activated"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Installed"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "All Perks"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "All Connections"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "All Plugins"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "All Free Plugins"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "License Mismatch"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Invalid"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Expired"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Site Inactive"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Renew License"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Upgrade"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Manage License"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "License Key"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "No License Key"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Status"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Sites"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Expires"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Never"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "N/A"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Deactivating..."
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Deactivate"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Are you sure you want to deactivate this license?"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Manage"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Enter License Key"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Validating..."
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Activate License"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Don't have a license?"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Get one now"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Learn more"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Failed to load license info."
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Licensed via Wiz Bundle"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Unable to Verify"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "Our server may be temporarily unavailable. Try clicking Refresh Licenses above, or deactivate and reactivate your license. If this persists, "
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "contact support"
+msgstr ""
+
+#: js/built/dashboard.js:2
+msgid "An unknown error occurred"
+msgstr ""

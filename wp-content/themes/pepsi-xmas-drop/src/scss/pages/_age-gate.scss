@@ -1,0 +1,492 @@
+/* ─── Stage ────────────────────────────────────────────────────────────────────
+   Same model as the game page: the DOB screen is laid out on an 829 × 1793
+   canvas — the size of the bg artwork (BPM bg_deco_image, game_start_bg.png)
+   — scaled uniformly to fit the viewport ("contain"), top-aligned. Sizes are
+   design px × --u (stage width ÷ 829), so everything keeps its proportions and
+   never scrolls. Reference device 440 × 956 (body capped at 430px → 1u ≈
+   0.519px); values below were converted from that layout.
+
+   The bg itself is NOT letterboxed: it covers the full page width (a short
+   viewport, e.g. Safari on an iPhone 13 Pro Max ≈ 428 × 726, would otherwise
+   leave black bars either side), cropping the extra height. Anchored to the
+   top (50% 0%), so any crop comes off the bottom. Bg vars are set inline by
+   page-age-gate.php. */
+
+.page-age-gate {
+	position: relative;
+	height: 100dvh;
+	overflow: hidden;
+	background-color: #000; // letterbox around the stage
+
+	// Page width mirrors the body cap (430px). Stage width is that or the
+	// height-limited width, whichever is smaller. Viewport units only, so
+	// --u means the same on this element, the scene and every descendant.
+	--ag-bw: min(100vw, 430px);
+	--ag-sw: min(var(--ag-bw), 100dvh * 829 / 1793);
+	--u: calc(var(--ag-sw) / 829);
+
+	background-image: var(--age-gate-bg);
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-position: 50% 0%;
+
+	--ag-shift-y: 0px;
+}
+
+/* Short phones (iPhone SE / 8 class, 667px tall): lift the content by 20px. */
+@media (max-height: 700px) {
+	.page-age-gate {
+		--ag-shift-y: -20px;
+	}
+}
+
+/* Contact step: its own bg (BPM `age-gate-contact`, falls back to the DOB
+   bg), and it can be taller than the stage on small screens — let it scroll. */
+.page-age-gate:has(.page-age-gate__form.is-step-contact) {
+	height: auto;
+	min-height: 100dvh;
+	overflow: visible;
+	background-image: var(--age-gate-bg-contact, var(--age-gate-bg));
+}
+
+/* Contact step: no hero title graphic. !important beats BPM's inline display:block. */
+.page-age-gate:has(.page-age-gate__form.is-step-contact) .page-age-gate__hero {
+	display: none !important;
+}
+
+.page-age-gate__scene {
+	position: relative;
+	width: var(--ag-sw);
+	aspect-ratio: 829 / 1793;
+	min-height: 0;
+	margin: var(--ag-shift-y) auto 0;
+	padding-top: calc(var(--u) * 60);           // 31px at reference — headline sits high, clear of the star
+	padding-bottom: 0;
+}
+
+// Hero + headline widths are set inline in px by BPM — scale them with the
+// stage instead (hence !important).
+.page-age-gate__hero {
+	width: calc(var(--u) * 588) !important;     // 305px at reference
+}
+
+.page-age-gate__headline-wrap {
+	margin-top: calc(var(--u) * 77);            // 40px at reference
+}
+
+.page-age-gate__headline-graphic {
+	width: calc(var(--u) * 598) !important;     // 310px at reference
+}
+
+/* ─── Gravity Forms — age gate page ───────────────────────────────────────── */
+
+.page-age-gate__form {
+	width: 100%;
+	max-width: 310px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: clamp(20px, 4.9vh, 44px);          /* design: 44px / 897 */
+}
+
+/* DOB step: pinned just below the tree (artwork y 1489) and sized in --u. */
+.page-age-gate__form.is-step-dob {
+	position: absolute;
+	top: calc(var(--u) * 1489);
+	left: 0;
+	right: 0;
+	max-width: calc(var(--u) * 598);
+	margin: 0 auto;
+
+	--pf-control-height: calc(var(--u) * 96);   // 50px at reference
+	--pf-control-font-size: calc(var(--u) * 39); // 20px at reference
+}
+
+.page-age-gate__form.is-step-dob .page-age-gate__title {
+	font-size: calc(var(--u) * 39) !important;  // 20px at reference
+	text-shadow: 0 calc(var(--u) * 4) calc(var(--u) * 23) rgba(0, 0, 0, 0.78);
+}
+
+.page-age-gate__form.is-step-dob .page-age-gate__form-body {
+	margin-top: calc(var(--u) * 39) !important; // 20px at reference
+}
+
+.page-age-gate__form.is-step-dob .validation_message {
+	margin-top: calc(var(--u) * 15) !important;
+	font-size: calc(var(--u) * 15) !important;  // 8px at reference
+}
+
+.page-age-gate__form.is-step-dob .terms-link {
+	margin-top: calc(var(--u) * 27);            // 14px at reference
+	font-size: calc(var(--u) * 25);             // 0.8rem at reference
+}
+
+.page-age-gate__title {
+	color: #fff !important;
+	font-family: 'PepsiOwners-Compressed', sans-serif !important;
+	font-size: 20px !important;
+	line-height: 1;
+	text-align: center;
+	text-shadow: 0 2px 12px rgba(0, 0, 0, 0.78);
+}
+
+// Contact step title only — the DOB title keeps its scaled size above.
+.page-age-gate__title--contact {
+	font-size: 30px !important;
+}
+
+// Contact step only — shown/hidden with the contact title in ui/age-gate.ts.
+.page-age-gate__contact-logo {
+	display: block;
+	width: 100px;
+	height: auto;
+	margin: 12px auto 0;
+
+	&.u-hidden {
+		display: none;
+	}
+}
+
+.page-age-gate__form .gform_wrapper {
+	width: 100%;
+}
+
+.page-age-gate__form-body {
+	margin-top: clamp(12px, 2.2vh, 20px) !important;
+}
+
+.page-age-gate__form .gform_title,
+.page-age-gate__form .gform_heading,
+.page-age-gate__form .gform_validation_errors {
+	display: none !important;
+}
+
+/* Prevent initial multi-page flash before GF applies inline page visibility. */
+.page-age-gate__form .gform_body .gform_page {
+	display: block;
+}
+
+.page-age-gate__form .gform_body .gform_page[style*="display:none"],
+.page-age-gate__form .gform_body .gform_page[style*="display: none"] {
+	display: none !important;
+}
+
+
+.page-age-gate__form .validation_message {
+	display: block !important;
+	margin-top: 8px !important;
+	padding: 0 !important;
+	background: transparent !important;
+	border: 0 !important;
+	color: #e61f48 !important;
+	font-family: 'PepsiOwners-Extended', sans-serif !important;
+	font-size: 8px !important;
+	line-height: 1 !important;
+	text-transform: uppercase;
+}
+
+
+.page-age-gate__form .gform_fields {
+	display: block !important;
+	grid-template-columns: unset !important;
+	grid-row-gap: 0 !important;
+	row-gap: 0 !important;
+}
+
+.page-age-gate__form .gfield_label {
+	display: none !important;
+}
+
+.page-age-gate__form input[type="text"],
+.page-age-gate__form input[type="email"],
+.page-age-gate__form input[type="tel"],
+.page-age-gate__form input[type="date"] {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 100% !important;
+	height: var(--pf-control-height) !important;
+	min-height: var(--pf-control-height) !important;
+	max-height: var(--pf-control-height) !important;
+	box-sizing: border-box !important;
+	padding: 0 18px !important;
+	border: none !important;
+	border-radius: 999px !important;
+	background: #fff !important;
+	color: #000;
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: 1.125rem !important;
+	line-height: var(--pf-control-height) !important;
+	text-align: left !important;
+}
+
+.page-age-gate__form input[type="text"]::placeholder,
+.page-age-gate__form input[type="email"]::placeholder,
+.page-age-gate__form input[type="tel"]::placeholder,
+.page-age-gate__form input[type="date"]::placeholder {
+	color: #999999 !important;
+}
+
+/* Date-of-birth field — enlarge the digits + placeholder, left-aligned so the
+   cursor lands at the start and the user begins typing the day (DD/) from the
+   left edge of the field. */
+.page-age-gate__form .ginput_container_date input.pf-date-text {
+	text-align: left !important;
+	font-size: 1.2rem !important;
+	letter-spacing: 0.05em;
+}
+
+.page-age-gate__form .ginput_container_date input.pf-date-text::placeholder {
+	font-size: 1.2rem !important;
+	letter-spacing: 0.05em;
+}
+
+// iOS user-agent styling — by default the value text inside <input type="date">
+// is rendered through ::-webkit-date-and-time-value with iOS's own font, size
+// and centred vertical alignment.  Force it to inherit ours so the picked date
+// matches every other input on the form.
+.page-age-gate__form input[type="date"]::-webkit-date-and-time-value {
+	font-family: 'PepsiOwners-Compressed', sans-serif !important;
+	font-size: 1.125rem !important;
+	line-height: var(--pf-control-height) !important;
+	text-align: left !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+.page-age-gate__form input[type="date"]::-webkit-datetime-edit {
+	font-family: 'PepsiOwners-Compressed', sans-serif !important;
+	font-size: 1.125rem !important;
+	line-height: var(--pf-control-height) !important;
+	padding: 0 !important;
+}
+
+.page-age-gate__form .gform_button,
+.page-age-gate__form .gform_next_button,
+.page-age-gate__form .gform_previous_button {
+	cursor: pointer;
+}
+
+/* Step 1 (DOB): input + button on one row */
+.page-age-gate__form.is-step-dob .gform_page:not([style*="display:none"]):not([style*="display: none"]) {
+	display: flex !important;
+	flex-wrap: nowrap !important;
+	align-items: flex-start;
+}
+
+.page-age-gate__form.is-step-dob .gform_fields {
+	display: block !important;
+	flex: 0 0 calc(var(--u) * 389);             // 202px at reference
+	width: calc(var(--u) * 389) !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+.page-age-gate__form.is-step-dob .gform_fields .gfield {
+	margin: 0 !important;
+}
+
+.page-age-gate__form.is-step-dob .gform_fields input[type="text"],
+.page-age-gate__form.is-step-dob .gform_fields input[type="email"],
+.page-age-gate__form.is-step-dob .gform_fields input[type="tel"],
+.page-age-gate__form.is-step-dob .gform_fields input[type="date"] {
+	width: calc(var(--u) * 389) !important;
+	padding: 0 calc(var(--u) * 35) !important;  // 18px at reference
+}
+
+// Typed text never drops below 16px — iOS zooms the page on focus below that.
+.page-age-gate__form.is-step-dob .ginput_container_date input.pf-date-text,
+.page-age-gate__form.is-step-dob .ginput_container_date input.pf-date-text::placeholder {
+	font-size: max(16px, var(--u) * 37) !important; // 1.2rem at reference
+}
+
+.page-age-gate__form.is-step-dob .gform_page_footer {
+	display: inline-flex !important;
+	flex: 0 0 calc(var(--u) * 189);             // 98px at reference
+	align-items: center;
+	justify-content: center;
+	width: calc(var(--u) * 189) !important;
+	margin: 0 0 0 calc(var(--u) * 23) !important; // 12px at reference
+	padding: 0 !important;
+}
+
+.page-age-gate__form.is-step-dob .gform_next_button,
+.page-age-gate__form.is-step-dob .gform_button,
+.page-age-gate__form.is-step-dob input.gform_next_button,
+.page-age-gate__form.is-step-dob input.gform_button,
+.page-age-gate__form.is-step-dob button.gform_next_button,
+.page-age-gate__form.is-step-dob button.gform_button {
+	flex: 0 0 auto;
+	width: calc(var(--u) * 189) !important;
+	min-width: calc(var(--u) * 189) !important;
+	max-width: calc(var(--u) * 189) !important;
+	padding: 0 !important;
+	background: #0025ff !important;
+	color: #fff !important;
+}
+
+.page-age-gate__form.is-step-dob .gform_previous_button {
+	display: none !important;
+}
+
+/* Step 2+ (name/email): vertically centred in the viewport (hero + headline
+   are hidden on this step). The scene drops its stage aspect/top padding and
+   fills the viewport; if the form is taller it grows and the page scrolls. */
+.page-age-gate__scene:has(.page-age-gate__form.is-step-contact) {
+	aspect-ratio: auto;
+	min-height: 100dvh;
+	margin-top: 0;
+	padding-top: 0;
+}
+
+.page-age-gate__form.is-step-contact {
+	margin-block: auto;
+}
+
+/* Step 2+ (name/email): vertical field stack */
+.page-age-gate__form.is-step-contact .gform_fields .gfield {
+	margin-bottom: 12px !important;
+}
+
+.page-age-gate__form.is-step-contact .gform_fields .gfield input[type="text"],
+.page-age-gate__form.is-step-contact .gform_fields .gfield input[type="email"],
+.page-age-gate__form.is-step-contact .gform_fields .gfield input[type="tel"],
+.page-age-gate__form.is-step-contact .gform_fields .gfield input[type="date"] {
+	width: 100% !important;
+	max-width: 100% !important;
+}
+
+/* Name complex (first + last) — put the two sub-fields on one row inside the
+   form's 302px column, wrapping to two rows automatically when the viewport
+   gets too narrow for both 140px-min inputs side by side. Overrides the
+   per-input width:302px rule above so the sub-spans share the row equally. */
+.page-age-gate__form.is-step-contact .gform_fields .ginput_container_name {
+	display: flex !important;
+	flex-flow: row wrap;
+	gap: 8px;
+	width: 100%;
+	max-width: 100%;
+	margin-inline: auto;
+	margin: 0;
+}
+
+.page-age-gate__form.is-step-contact .gform_fields .ginput_container_name > span {
+	flex: 1 1 140px;
+	min-width: 0;
+	padding: 0;
+}
+
+.page-age-gate__form.is-step-contact .gform_fields .ginput_container_name > span input[type="text"] {
+	width: 100% !important;
+	max-width: 100% !important;
+}
+
+.page-age-gate__form.is-step-contact .gform_page_footer {
+	display: flex !important;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	margin-top: 12px !important;
+}
+
+.page-age-gate__form.is-step-contact .gform_previous_button,
+.page-age-gate__form.is-step-contact .gform_next_button,
+.page-age-gate__form.is-step-contact .gform_button {
+	width: 302px !important;
+	max-width: 302px !important;
+	padding: 0 !important;
+	background: #0025ff !important;
+	color: #fff !important;
+}
+
+.page-age-gate__form.is-step-contact input.gform_button,
+.page-age-gate__form.is-step-contact button.gform_button {
+	width: 98px !important;
+	min-width: 98px !important;
+	max-width: 98px !important;
+	padding: 0 !important;
+	background: #0025ff !important;
+	color: #fff !important;
+}
+
+/* ─── Checkbox — circular pill style ──────────────────────────────────────── */
+
+.page-age-gate__form .ginput_container_checkbox {
+	margin: 12px 0 0;
+	letter-spacing: 1px;
+	display: flex;
+	justify-content: center;
+}
+
+.page-age-gate__form .ginput_container_checkbox .gfield-choice-input + label,
+.page-age-gate__form .ginput_container_checkbox label {
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: 0.8rem !important;
+	font-weight: 400;
+	text-transform: uppercase;
+	color: #fff;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding-left: 0;
+	line-height: 1.3;
+	text-align: left;
+	cursor: pointer;
+	position: relative;
+}
+
+.page-age-gate__form .ginput_container_checkbox label a {
+	color: #fff;
+	text-decoration: underline;
+}
+
+.page-age-gate__form .ginput_container_checkbox label::before {
+	content: '';
+	flex-shrink: 0;
+	width: 18px;
+	height: 18px;
+	border: 2px solid #fff;
+	border-radius: 50%;
+	box-sizing: border-box;
+	background: transparent;
+}
+
+.page-age-gate__form .ginput_container_checkbox label::after {
+	content: '';
+	position: absolute;
+	left: 15px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 8px;
+	height: 8px;
+	background: #fff;
+	border-radius: 50%;
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+.page-age-gate__form .ginput_container_checkbox input[type='checkbox'] {
+	/* Keep the input focusable so HTML5 / GF required validation actually fires
+	   and the "please tick this box" error can render. A zero-sized input
+	   (the previous width:0; height:0) is unfocusable, so the validator
+	   silently skipped it and let the form submit. */
+	position: absolute;
+	left: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 18px;
+	height: 18px;
+	margin: 0;
+	opacity: 0;
+	cursor: pointer;
+}
+
+.page-age-gate__form .ginput_container_checkbox input[type='checkbox']:checked + label::after {
+	opacity: 1;
+}
+
+.gchoice label{
+	background-color: rgba(0, 0, 0, 0.2);
+    padding: 5px 10px!important;
+	border-radius: 50px!important;
+	margin: 0!important;
+} 

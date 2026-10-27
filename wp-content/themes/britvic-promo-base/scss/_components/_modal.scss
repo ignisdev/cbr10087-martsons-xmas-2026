@@ -1,0 +1,65 @@
+// =============================================================================
+// _modal.scss — Terms & Conditions modal overlay
+// Shown/hidden via JS TermsModal.js
+// =============================================================================
+
+.terms-wrapper {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 9998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-slow);
+  overflow-y: auto;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 24px var(--scene-padding-x);
+
+  &--is-active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  &__inner {
+    background: #fff;
+    color: #222;
+    border-radius: var(--radius-lg);
+    max-width: 520px;
+    width: 100%;
+    padding: 24px;
+    position: relative;
+    margin: auto;
+  }
+
+  &__close {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 28px;
+    line-height: 1;
+    color: #555;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+
+    &:hover { color: #000; }
+  }
+
+  &__content {
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    font-family: var(--font-body);
+    max-height: 70vh;
+    overflow-y: auto;
+    padding-right: 8px;
+
+    p + p { margin-top: 12px; }
+    h2, h3 { margin: 20px 0 8px; }
+    ul { padding-left: 20px; }
+    li + li { margin-top: 4px; }
+  }
+}

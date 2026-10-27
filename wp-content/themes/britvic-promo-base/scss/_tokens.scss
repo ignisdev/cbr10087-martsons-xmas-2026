@@ -1,0 +1,72 @@
+// =============================================================================
+// _tokens.scss — CSS Custom Property Defaults
+//
+// ALL brand values are defined here as CSS custom properties.
+// At runtime, BPM_Brand_Config::output_css_vars() overrides these via wp_head,
+// so templates and components NEVER need hardcoded brand values.
+//
+// Figma Variables map 1:1 to these tokens (same names, same grouping).
+// =============================================================================
+
+:root {
+
+  // ── Brand Colours ──────────────────────────────────────────────────────────
+  // Figma group: Colors/
+  --color-primary:    #e61f48;  // Main brand colour — headlines, key UI elements
+  --color-secondary:  #000000;  // Supporting colour
+  --color-accent:     #ffffff;  // Contrast accent (often white)
+  --color-bg:         #000000;  // Main page background
+  --color-bg-alt:     #1a1a1a;  // Alternative bg — used on thanks page etc.
+  --color-text:       #ffffff;  // Body text colour
+  --color-text-muted: rgba(255,255,255,0.7); // Secondary text
+  --color-error:      #ff4444;  // Validation error messages
+
+  // ── CTA / Buttons ──────────────────────────────────────────────────────────
+  --color-cta:        #e61f48;  // Primary button background
+  --color-cta-text:   #ffffff;  // Primary button text
+  --color-cta-hover:  #c01838;  // Primary button hover state
+
+  // ── Typography ─────────────────────────────────────────────────────────────
+  // Figma group: Typography/
+  --font-primary:     'Obviously', 'Arial Black', sans-serif;
+  --font-secondary:   'FatFrank', 'Arial Black', sans-serif;
+  --font-body:        system-ui, sans-serif;
+
+  --font-weight-normal: 400;
+  --font-weight-bold:   700;
+  --font-weight-black:  900;
+
+  // ── Type Scale ─────────────────────────────────────────────────────────────
+  --text-xs:   0.75rem;    // 12px
+  --text-sm:   0.875rem;   // 14px
+  --text-base: 1rem;       // 16px
+  --text-lg:   1.25rem;    // 20px
+  --text-xl:   1.5rem;     // 24px
+  --text-2xl:  2rem;       // 32px
+  --text-3xl:  2.5rem;     // 40px
+  --text-4xl:  3rem;       // 48px
+
+  // ── Layout ─────────────────────────────────────────────────────────────────
+  --site-max-width:   480px;  // Microsite container max width
+  --scene-padding-x:  24px;   // Horizontal page padding
+  --scene-padding-y:  32px;   // Vertical page padding
+
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   16px;
+  --radius-full: 9999px;  // Pill shape
+
+  // ── Transitions ────────────────────────────────────────────────────────────
+  --transition-fast:  150ms ease;
+  --transition-base:  300ms ease;
+  --transition-slow:  500ms ease;
+
+  // ── Asset Slots ────────────────────────────────────────────────────────────
+  // Injected at runtime by BPM_Brand_Config::output_css_vars() per page.
+  // Values here are the safe fallback defaults.
+  --asset-bg-base:             none;       // Base background image URL
+  --asset-bg-deco:             none;       // Decorative layer image URL
+  --asset-bg-deco-position:    50% 100%;   // Deco layer position
+  --asset-bg-deco-size:        100%;       // Deco layer size
+
+}

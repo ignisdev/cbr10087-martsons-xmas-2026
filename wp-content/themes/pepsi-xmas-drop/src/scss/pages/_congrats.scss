@@ -1,0 +1,472 @@
+/* ─── Congratulations / Non-winner pages ──────────────────────────────────── */
+
+body.page-template-page-congratulations-php,
+body.page-template-page-non-winner-php,
+body.page-template-page-prize-paid-php,
+body.page-template-page-thanks-php {
+	overflow-y: auto;
+	height: auto;
+	min-height: 100dvh;
+	background: #000;
+	color: #fff;
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+}
+
+.congrats-page {
+	width: 100%;
+	max-width: 430px;
+	padding: 0 24px;
+	text-align: center;
+}
+
+.congrats-content {
+	padding: 14% 0 0;
+}
+
+.congrats-content-sorry {
+	padding: 0 0 0!important;
+}
+
+.page-non-winner {
+	padding: 24% 0 0;
+}
+
+.page-non-winner__try-again {
+	/* Block-level flex so margin: auto actually centres the anchor on Safari —
+	   inline anchors don't honour auto margins. Explicit height + line-height
+	   keeps the label vertically centred when -webkit-appearance:none strips
+	   the user-agent button baseline that .pepsi-pill-button relies on. */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 208px;
+	max-width: 100%;
+	height: var(--pf-control-height);
+	line-height: 1;
+	margin: 28px auto 0;
+	background: #0025ff !important;
+	color: #fff !important;
+	text-decoration: none;
+	font-size: 22px !important;
+	font-family: 'PepsiOwners-Compressed', sans-serif !important;
+}
+
+.page-prize-paid {
+	padding: 24% 0 0;
+}
+
+/* Stripe-verify CTAs — both render as the standard Pepsi pill button. They
+   inherit height / border-radius / font from .pepsi-pill-button (see
+   _buttons.scss); this scoped rule sets width + spacing + colours.
+   Cancel uses an outline variant so the primary "Complete verification" stays
+   visually dominant. */
+.page-stripe-verify__cta,
+.page-stripe-verify__cancel {
+	/* width: max-content + margin: auto = block-level box that hugs its label
+	   and still centres on Safari (inline auto-margins don't centre). The
+	   max-width guard stops a long label from blowing past the card on
+	   narrow screens. */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: max-content;
+	max-width: 100%;
+	margin: 14px auto 0;
+	padding: 0 28px !important;
+	text-decoration: none;
+	font-size: 14px !important;
+	font-family: 'PepsiOwners-Extended', sans-serif !important;
+	letter-spacing: 0.05em;
+}
+
+.page-stripe-verify__cta {
+	background: #0025ff !important;
+	color: #fff !important;
+}
+
+.page-stripe-verify__cancel {
+	background: transparent !important;
+	color: #fff !important;
+	border: 1px solid #fff !important;
+}
+
+.page-thanks {
+	padding: 24% 0 0;
+}
+
+.page-congrats__form {
+	margin-bottom: 40px;
+}
+
+.congrats-heading {
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: clamp(2rem, 14vw, 3.5rem);
+	font-weight: 400;
+	line-height: 1;
+	text-transform: uppercase;
+	color: #fff;
+	white-space: nowrap;
+}
+
+.congrats-sub {
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: clamp(1rem, 5vw, 1.15rem);
+	line-height: 1.1;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 1);
+	margin: 0.4rem 0;
+}
+
+.congrats-score {
+	font-family: 'PepsiOwners-Extended', sans-serif;
+	line-height: 1;
+	margin-bottom: 2rem;
+}
+
+.congrats-score__num {
+	font-size: clamp(3rem, 14vw, 4.5rem);
+	font-weight: normal;
+	color: #004B93;
+}
+
+.congrats-score__pts {
+	font-size: 0.32em;
+	vertical-align: super;
+	color: rgba(255, 255, 255, 0.65);
+}
+
+.congrats-sorry__heading {
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: clamp(3.5rem, 30vw, 7rem);
+	font-weight: 400;
+	color: #fff;
+	text-transform: uppercase;
+	margin: 0 0 0.3rem;
+	line-height: 1;
+}
+
+.daily-limit__heading {
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: clamp(2rem, 14vw, 3.5rem);
+	font-weight: 400;
+	color: #fff;
+	line-height: 1;
+	text-transform: uppercase;
+	white-space: nowrap;
+}
+
+.congrats-sorry__sub {
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: 1.6rem;
+	text-transform: uppercase;
+	color: rgba(255, 255, 255, 1);
+	margin: 20px;
+	line-height: 1;
+}
+
+.congrats-sorry__sub a {
+	color:#fff;
+	text-decoration: none;
+}
+.congrats-form {
+	text-align: left;
+}
+
+.congrats-form .gform_wrapper {
+	width: 322px;
+	margin: 0 auto;
+}
+
+.congrats-form .gform_validation_errors,
+.congrats-form .gf_progressbar_wrapper,
+.congrats-form .gform_title,
+.congrats-form h2.gform_title,
+.congrats-form .gform_heading {
+	display: none !important;
+}
+
+.congrats-form .gform_fields {
+	display: block !important;
+	grid-row-gap: unset;
+	grid-template-columns: unset;
+}
+
+.congrats-form .gfield_label {
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: clamp(0.85rem, 3.5vw, 1rem);
+	font-weight: normal;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: #fff;
+	display: block;
+	margin-bottom: 6px;
+	line-height: 1.2;
+}
+
+.congrats-form .hidden_label .gfield_label {
+	display: none !important;
+}
+
+.congrats-form .gfield_required {
+	display: inline !important;
+	color: #004B93;
+	margin-left: 3px;
+}
+
+.congrats-form .ginput_container input[type='text'],
+.congrats-form .ginput_container input[type='email'],
+.congrats-form .ginput_container input[type='tel'],
+.congrats-form .ginput_container input[type='date'],
+.congrats-form .ginput_container_phone input,
+.congrats-form .ginput_container_date[data-native-date-overlay] > input[type='date'] {
+	-webkit-appearance: none;
+	appearance: none;
+	background: #fff !important;
+	border: none;
+	border-radius: 999px !important;
+	-webkit-border-radius: 999px !important;
+	outline: none;
+	width: 100% !important;
+	display: block;
+	box-sizing: border-box;
+	color: #000;
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: 1rem !important;
+	font-weight: 400;
+	height: 44px;
+	padding: 0 18px !important;
+	margin-bottom: 12px !important;
+}
+
+.congrats-form .ginput_container input[type='text']::placeholder,
+.congrats-form .ginput_container input[type='email']::placeholder,
+.congrats-form .ginput_container input[type='tel']::placeholder,
+.congrats-form .ginput_container_phone input::placeholder {
+	color: rgba(0, 0, 0, 0.35);
+	font-size: 0.85rem;
+}
+
+/* Match the date overlay's font size to the rest of the congrats form fields.
+   Without these the WebKit datetime-edit chrome inherits the 1.125rem default
+   from _forms.scss. */
+.congrats-form .ginput_container_date[data-native-date-overlay] > input[type='date']::-webkit-date-and-time-value,
+.congrats-form .ginput_container_date[data-native-date-overlay] > input[type='date']::-webkit-datetime-edit {
+	font-size: 1rem;
+}
+
+/* Empty-state placeholder — congrats-page-specific overrides. Covers the
+   whole input with an opaque box so the underlying date chrome (00/00/0000
+   etc.) doesn't bleed through on Safari desktop. */
+.congrats-form .ginput_container_date[data-native-date-overlay][data-empty]::before {
+	content: attr(data-placeholder);
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	padding: 0 18px;
+	background: #fff;
+	color: #afafaf;
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: 0.9rem;
+	line-height: 1;
+	pointer-events: none;
+	border-radius: 999px;
+}
+
+
+.congrats-form .gfield_error .ginput_container input[type='text'],
+.congrats-form .gfield_error .ginput_container input[type='email'],
+.congrats-form .gfield_error .ginput_container input[type='tel'] {
+	border: 2px solid #e61f48 !important;
+}
+
+.congrats-form .gfield_validation_message,
+.congrats-form .validation_message {
+	background: none !important;
+	border: none !important;
+	padding: 0 0 4px !important;
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: 0.75rem !important;
+	text-transform: uppercase;
+	color: #e61f48 !important;
+	display: block;
+	line-height: 1;
+}
+
+.congrats-form .ginput_container_checkbox {
+	margin: 12px 0 0;
+	letter-spacing: 1px;
+	display: flex;
+	justify-content: center;
+}
+
+.congrats-form .ginput_container_checkbox .gfield-choice-input + label,
+.congrats-form .ginput_container_checkbox label {
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: 0.8rem !important;
+	font-weight: 400;
+	text-transform: uppercase;
+	color: #fff;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding-left: 0;
+	line-height: 1.3;
+	text-align: left;
+	cursor: pointer;
+	position: relative;
+}
+
+.congrats-form .ginput_container_checkbox label a {
+	color: #fff;
+	text-decoration: underline;
+}
+
+.congrats-form .ginput_container_checkbox label::before {
+	content: '';
+	flex-shrink: 0;
+	width: 18px;
+	height: 18px;
+	border: 2px solid #fff;
+	border-radius: 50%;
+	box-sizing: border-box;
+	background: transparent;
+}
+
+.congrats-form .ginput_container_checkbox label::after {
+	content: '';
+	position: absolute;
+	left: 15px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 8px;
+	height: 8px;
+	background: #fff;
+	border-radius: 50%;
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+.congrats-form .ginput_container_checkbox input[type='checkbox'] {
+	/* Keep the input addressable for HTML5/GF required validation. A zero-size
+	   input can't be focused to show the "please tick this box" error, so the
+	   submit slips through. Overlay the visible circle instead and zero out
+	   only its visual presence with opacity. */
+	position: absolute;
+	left: 0;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 18px;
+	height: 18px;
+	margin: 0;
+	opacity: 0;
+	cursor: pointer;
+}
+
+.congrats-form .ginput_container_checkbox input[type='checkbox']:checked + label::after {
+	opacity: 1;
+}
+
+.congrats-form .gform_footer {
+	padding: 0 !important;
+	margin-top: 28px !important;
+	display: flex;
+	justify-content: center;
+}
+
+.congrats-form .gform_button,
+.congrats-form input[type='submit'] {
+	-webkit-appearance: none;
+	appearance: none;
+	display: inline-block;
+	width: auto;
+	background: #0025ff !important;
+	color: #fff !important;
+	border: none;
+	border-radius: 999px !important;
+	-webkit-border-radius: 999px !important;
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: 1.1rem !important;
+	font-weight: 400;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	padding: 14px 40px !important;
+	cursor: pointer;
+	line-height: 1 !important;
+	transition: background 0.2s ease, transform 0.18s ease;
+}
+
+.congrats-form .gform_button:hover,
+.congrats-form input[type='submit']:hover {
+	background: #001ecc !important;
+	transform: scale(1.04);
+}
+
+.congrats-form .gform_button:active,
+.congrats-form input[type='submit']:active {
+	transform: scale(0.97);
+	transition-duration: 0.08s;
+}
+
+.congrats-form__intro {
+	margin-top: 20px;
+	margin-bottom: 10px;
+	text-align: center;
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: 0.85rem;
+	text-transform: uppercase;
+	color: #fff;
+	line-height: 1;
+}
+
+.terms-link {
+	display: block;
+	margin-top: 14px;
+	color: #fff;
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: 0.8rem;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	text-decoration: underline;
+	text-underline-offset: 1px;
+	text-align: center;
+}
+
+.terms-link:hover {
+	opacity: 0.75;
+}
+
+.page-badge {
+	position: fixed;
+	bottom: 20px;
+	left: 20px;
+	width: 56px;
+	height: auto;
+	z-index: 50;
+	pointer-events: none;
+}
+
+#input_3_3_raw, #input_2_3_raw  {
+	padding-left: 52px !important;
+}
+
+.gfield--type-phone {
+	margin-bottom: 12px !important;
+}
+
+.gform-theme--foundation .gform-grid-row {
+	row-gap: 0 !important;
+}
+
+.iti__country-name {
+	color: #000 !important;
+}
+
+.gchoice label{
+	background-color: rgba(0, 0, 0, 0.3);
+    padding: 5px 10px!important;
+	border-radius: 50px!important;
+	margin: 0!important;
+} 

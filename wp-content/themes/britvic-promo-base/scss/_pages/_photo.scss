@@ -1,0 +1,71 @@
+// =============================================================================
+// _photo.scss — Photo upload / proof of purchase page
+// =============================================================================
+
+.scene--photo {
+  .upload-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+
+    &__title {
+      font-size: var(--text-lg);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    // Camera trigger area
+    &__camera {
+      position: relative;
+      width: 200px;
+      height: 280px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &-icon {
+        max-width: 120px;
+        height: auto;
+
+        // Default SVG icon styling
+        &--default {
+          color: var(--color-accent);
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+
+  // Photo preview (background-image set by JS after selection)
+  .interactive-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-md);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+  }
+
+  // Visual frame guide over the camera
+  .interactive-overlay-frame {
+    position: absolute;
+    inset: 8px;
+    border: 3px solid var(--color-accent);
+    border-radius: var(--radius-md);
+    pointer-events: none;
+  }
+
+  // Hidden file input — triggered programmatically by JS
+  #photoInput {
+    display: none;
+  }
+
+  // Hidden GF form wrapper
+  #gf-photo-form {
+    display: none;
+  }
+}

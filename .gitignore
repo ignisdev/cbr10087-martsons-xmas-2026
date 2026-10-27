@@ -1,0 +1,86 @@
+# ── Allowlist approach: ignore everything, then opt-in ────────────────────────
+*
+
+# Keep this file + the project docs
+!.gitignore
+!CLAUDE.md
+!AGENTS.md
+!skills.md
+!XMAS_PROMO.md
+
+# Keep wp-content tree (exceptions below strip the unwanted parts back out)
+!wp-content/
+!wp-content/**
+
+# ── wp-content: exclude generated / sensitive / binary subtrees ───────────────
+
+# Uploads (user-generated binary assets)
+wp-content/uploads/
+
+# WordPress language packs (deploy from CDN)
+wp-content/languages/
+
+# Wordfence runtime logs / firewall state
+wp-content/wflogs/
+
+# WP cache & upgrade artefacts
+wp-content/cache/
+wp-content/upgrade/
+wp-content/backup-db/
+wp-content/advanced-cache.php
+wp-content/wp-cache-config.php
+wp-content/object-cache.php
+
+# Theme build artefacts & dependencies
+# dist/ (built bundle) and vendor/ (Stripe SDK) ARE tracked — the server
+# deploys from git without running npm/composer. Rebuild before committing.
+wp-content/themes/pepsi-xmas-drop/node_modules/
+
+# Source GLBs (~85 MB Blender exports) stay local — not used by the game
+# (pieces are PNG sprites, see skills.md → Bauble Artwork).
+wp-content/themes/pepsi-xmas-drop/src/images/baubles/glbs/*.glb
+wp-content/themes/britvic-promo-base/dist/
+wp-content/themes/britvic-promo-base/node_modules/
+
+# Plugin dependencies (plugin vendor/ dirs are runtime code — tracked)
+wp-content/plugins/**/node_modules/
+
+# ── Secrets & environment ──────────────────────────────────────────────────────
+docker/
+docker/.env
+.env
+.env.*
+!.env.example
+wp-config.php
+wp-config-local.php
+
+# ── Project / design files ────────────────────────────────────────────────────
+claude/
+figma/
+docs/
+*.ai
+*.psd
+*.sketch
+*.xd
+*.docx
+*.pdf
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
+wp-content/debug.log
+
+# ── OS & editor junk ──────────────────────────────────────────────────────────
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+AGENTS.md
+CLAUDE.md

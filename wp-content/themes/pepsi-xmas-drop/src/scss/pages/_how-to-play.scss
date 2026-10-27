@@ -1,0 +1,121 @@
+.page-how-to-play {
+	position: relative;
+	align-items: center;
+	text-align: center;
+}
+
+.page-how-to-play__scene {
+	position: relative;
+	/* Stack panels in the same grid cell so the larger one defines scene
+	   height (instead of absolute-positioning, which doesn't push the
+	   parent and lets content overflow under the footer on short screens). */
+	display: grid;
+	grid-template-columns: 1fr;
+}
+
+.page-how-to-play__panel {
+	grid-row: 1;
+	grid-column: 1;
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center; // both panels (intro header graphic; hero + steps + Play) centred vertically
+	padding: clamp(24px, 6vh, 72px) 24px;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.page-how-to-play__panel.is-hidden {
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+}
+
+.page-how-to-play__panel.is-visible {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+}
+
+.page-how-to-play__panel--intro {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+}
+
+.page-how-to-play__graphic {
+	width: 100%;
+	max-width: 320px;
+	height: auto;
+	margin: 0 auto 24px;
+}
+
+.page-how-to-play__instructions {
+	max-width: 320px;
+	width: 100%;
+}
+
+.page-how-to-play__instructions p {
+	margin: 0;
+	/* Spacing + font scale with viewport height against the 897px design.
+	   At 897dvh: 12px / 18px (design). Floor on iPhone SE (~568dvh): 8/16. */
+	margin-top: clamp(8px, 1.34vh, 12px);          /* design: 12px / 897 */
+	font-size: clamp(16px, 2vh, 18px);             /* design: 18px / 897 */
+	font-family: var(--pf-font-regular);
+	font-weight: 400;
+	text-transform: uppercase;
+	text-align: left;
+	color: #fff;
+	line-height: 1.2;
+}
+
+/* Numbered steps — col 1: large Pepsi-blue number, one size for all,
+   sized to span a 3-line step (3 × 1.2 line-height ÷ ~0.72 cap height = 5em);
+   col 2: white, left-aligned copy. Lines don't wrap (the copy's
+   own breaks are kept) and the size tracks viewport width so the longest
+   line fits beside the widest number on small phones. */
+.page-how-to-play__steps {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: clamp(14px, 2.2vh, 20px);
+	font-size: min(17px, 4.1vw);
+}
+
+.page-how-to-play__step {
+	display: grid;
+	grid-template-columns: 4.8em 1fr; // fixed, fits the widest digit → text edges align
+	align-items: center;
+	column-gap: 0.6em;
+}
+
+.page-how-to-play__instructions .page-how-to-play__step-text {
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-size: 1.2em;
+	white-space: nowrap;
+}
+
+.page-how-to-play__step-num {
+	font-family: 'PepsiOwners-Extended', sans-serif;
+	font-size: 5em;
+	line-height: 0.74;
+	color: var(--pf-color-primary, #0025ff);
+	text-align: right;
+}
+
+.page-how-to-play__instructions .page-how-to-play__step-text {
+	margin-top: 0;
+}
+
+.page-how-to-play__instructions p:first-child {
+	margin-top: 0;
+}
+
+.page-how-to-play__accent {
+	color: var(--pf-color-primary, #0025ff);
+}

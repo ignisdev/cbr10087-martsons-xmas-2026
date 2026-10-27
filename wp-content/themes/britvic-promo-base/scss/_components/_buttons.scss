@@ -1,0 +1,83 @@
+// =============================================================================
+// _buttons.scss — CTA button styles, all token-driven
+// =============================================================================
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 32px;
+  background-color: var(--color-cta);
+  color: var(--color-cta-text);
+  font-family: var(--font-primary);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-full);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: background-color var(--transition-fast),
+              transform var(--transition-fast),
+              opacity var(--transition-fast);
+  text-decoration: none;
+  min-width: 200px;
+
+  &:hover,
+  &:focus-visible {
+    background-color: var(--color-cta-hover);
+    outline: none;
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  // Secondary variant — outlined
+  &--secondary {
+    background-color: transparent;
+    border-color: var(--color-cta);
+    color: var(--color-cta);
+
+    &:hover,
+    &:focus-visible {
+      background-color: var(--color-cta);
+      color: var(--color-cta-text);
+    }
+  }
+
+  // Ghost variant — white outline
+  &--ghost {
+    background-color: transparent;
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+
+    &:hover,
+    &:focus-visible {
+      background-color: var(--color-accent);
+      color: var(--color-bg);
+    }
+  }
+}
+
+// ── Terms button ─────────────────────────────────────────────────────────────
+
+.terms-button {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: var(--font-body);
+
+  &:hover {
+    color: var(--color-text);
+  }
+}

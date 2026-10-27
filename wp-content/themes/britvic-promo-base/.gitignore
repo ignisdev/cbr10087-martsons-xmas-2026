@@ -1,0 +1,15 @@
+# Node
+node_modules/
+
+# Compiled assets — regenerate with `npm run build`
+dist/dist.css
+dist/dist.css.map
+dist/dist.js
+dist/dist.js.map
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+*.code-workspace

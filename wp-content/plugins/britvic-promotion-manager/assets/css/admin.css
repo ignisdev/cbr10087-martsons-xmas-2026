@@ -1,0 +1,357 @@
+/**
+ * Britvic Promotion Manager Admin CSS
+ */
+
+:root {
+    --bpm-surface: #ffffff;
+    --bpm-surface-muted: #f6f7f7;
+    --bpm-border: #dcdcde;
+    --bpm-text: #1d2327;
+    --bpm-text-muted: #646970;
+    --bpm-accent: #2271b1;
+    --bpm-radius: 6px;
+    --bpm-gap-sm: 10px;
+    --bpm-gap-md: 16px;
+    --bpm-gap-lg: 24px;
+}
+
+.bpm-admin-container {
+    max-width: 1200px;
+}
+
+.bpm-admin-container .postbox {
+    border: 1px solid var(--bpm-border);
+    border-radius: var(--bpm-radius);
+    overflow: hidden;
+    margin-bottom: var(--bpm-gap-lg);
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+}
+
+.bpm-admin-container .postbox .hndle,
+.bpm-admin-container .postbox .postbox-header {
+    background: var(--bpm-surface-muted);
+}
+
+.bpm-admin-container .postbox .hndle {
+    margin: 0;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--bpm-border);
+    font-size: 15px;
+}
+
+.bpm-admin-container .postbox .inside {
+    margin: 0;
+    padding: var(--bpm-gap-md);
+}
+
+.bpm-admin-container .description {
+    color: var(--bpm-text-muted);
+    max-width: 100ch;
+}
+
+.bpm-admin-container .form-table th {
+    width: 240px;
+    color: var(--bpm-text);
+    font-weight: 600;
+}
+
+.bpm-admin-container .form-table td {
+    vertical-align: top;
+}
+
+/* Keep field controls aligned even when label text length varies */
+.bpm-admin-container .form-table td > label {
+    display: inline-grid;
+    grid-template-columns: 160px minmax(0, 1fr);
+    align-items: start;
+    column-gap: 12px;
+    max-width: 560px;
+}
+
+/* Do not force grid layout on checkbox/radio-only labels */
+.bpm-admin-container .form-table td > label:has(input[type="checkbox"]:first-child),
+.bpm-admin-container .form-table td > label:has(input[type="radio"]:first-child) {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    max-width: none;
+}
+
+.bpm-admin-container .form-table td > label > input[type="text"],
+.bpm-admin-container .form-table td > label > input[type="email"],
+.bpm-admin-container .form-table td > label > input[type="url"],
+.bpm-admin-container .form-table td > label > input[type="number"],
+.bpm-admin-container .form-table td > label > select,
+.bpm-admin-container .form-table td > label > textarea {
+    width: 100%;
+    max-width: 320px;
+}
+
+.bpm-admin-container input.regular-text,
+.bpm-admin-container input[type="email"],
+.bpm-admin-container input[type="url"],
+.bpm-admin-container input[type="number"],
+.bpm-admin-container select,
+.bpm-admin-container textarea {
+    min-height: 34px;
+}
+
+.bpm-admin-container .button + .button {
+    margin-left: 6px;
+}
+
+.bpm-admin-container .wp-list-table th {
+    font-weight: 600;
+}
+
+.bpm-admin-container .wp-list-table td,
+.bpm-admin-container .wp-list-table th {
+    vertical-align: middle;
+}
+
+.bpm-admin-content {
+    max-width: 1200px;
+}
+
+.bpm-admin-section {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.bpm-admin-section h2 {
+    margin-top: 0;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+}
+
+.bmp-widget-header h2 {
+    margin: 1em;
+}
+
+.bpm-status {
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.bpm-status-draft { 
+    background: #f0f0f1; 
+    color: #50575e; 
+}
+
+.bpm-status-scheduled { 
+    background: #fff3cd; 
+    color: #856404; 
+}
+
+.bpm-status-active { 
+    background: #d1ecf1; 
+    color: #0c5460; 
+}
+
+.bpm-status-closed { 
+    background: #f8d7da; 
+    color: #721c24; 
+}
+
+.bpm-status-claimed {
+    color: #d63638;
+    font-weight: 500;
+}
+
+.bpm-status-available {
+    color: #00a32a;
+    font-weight: 500;
+}
+
+.bpm-status-reseeded {
+    color: #f0b849;
+    font-style: italic;
+}
+
+.bpm-no-winner {
+    color: #646970;
+    font-style: italic;
+    cursor: pointer;
+}
+
+.bpm-no-winner:hover {
+    color: #2271b1;
+    text-decoration: underline;
+}
+
+.winner-field {
+    min-width: 150px;
+}
+
+.gf-entry-link a, .email-link a {
+    text-decoration: none;
+}
+
+.gf-entry-link a:hover, .email-link a:hover {
+    text-decoration: underline;
+}
+
+.editable {
+    cursor: pointer;
+    position: relative;
+}
+
+.editable:hover {
+    background-color: #f0f6fc;
+}
+
+.edit-input {
+    width: 100%;
+    padding: 2px 4px;
+    border: 1px solid #2271b1;
+    border-radius: 3px;
+    font-size: inherit;
+}
+
+.edit-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.edit-container .button {
+    position: absolute;
+    right: -60px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 25px;
+    height: 25px;
+    padding: 0;
+    line-height: 1;
+    font-size: 14px;
+    z-index: 1000;
+    min-width: 25px;
+}
+
+.edit-container .cancel-field {
+    right: -30px;
+}
+
+.edit-container .save-field {
+    right: -60px;
+}
+
+.updated {
+    background-color: #d1eddd !important;
+    transition: background-color 0.3s ease;
+}
+
+/* Prize generation form */
+.prize-type-row {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.prize-type-row .form-table {
+    margin: 0;
+}
+
+.prize-type-row .form-table th {
+    width: 150px;
+    padding: 8px 10px;
+}
+
+.prize-type-row .form-table td {
+    padding: 8px 10px;
+}
+
+.remove-prize-type {
+    margin-top: 10px;
+}
+
+/* Email template styles */
+.email-template-row {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    background: #f9f9f9;
+}
+
+.email-preview {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f0f0f1;
+    border-radius: 4px;
+}
+
+#email-preview-content {
+    font-family: Arial, sans-serif;
+    line-height: 1.5;
+}
+
+/* Loading states */
+.loading {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.spinner {
+    background: url('../../../../../../wp-admin/images/spinner.gif') no-repeat;
+    background-size: 16px 16px;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .bpm-admin-content {
+        margin: 0 10px;
+    }
+
+    .bpm-admin-container .form-table th {
+        width: auto;
+    }
+
+    .bpm-admin-container .form-table td > label {
+        display: block;
+        max-width: none;
+    }
+    
+    .edit-container .button {
+        position: static;
+        transform: none;
+        margin-left: 5px;
+        display: inline-block;
+    }
+}
+
+/* Icon-only row-action buttons (table row actions, pagination, toolbar pairs) */
+.wp-list-table .button-small,
+.wp-list-table td .button,
+.pagination-links .button,
+.filter-actions .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 0 6px;
+    min-width: 30px;
+}
+
+/* Keep icon-only row-action groups on a single line instead of wrapping */
+.wp-list-table tbody td:last-child {
+    white-space: nowrap;
+}
+
+.pagination-links,
+.filter-actions {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 6px;
+}

@@ -1,0 +1,21 @@
+{
+    "name": "spinupwp/spinupwp-plugin",
+    "type": "wordpress-plugin",
+    "authors": [
+        {
+            "name": "SpinupWP",
+            "email": "sudo@spinupwp.com"
+        }
+    ],
+    "require": {
+        "php": "^7.1|^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "SpinupWp\\": "src/"
+        },
+        "files": [
+            "functions.php"
+        ]
+    }
+}

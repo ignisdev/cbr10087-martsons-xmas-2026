@@ -1,0 +1,16 @@
+// =============================================================================
+// _thanks.scss — Thank you / confirmation page
+// Often uses a different background colour (--color-bg-alt)
+// =============================================================================
+
+.page-thanks .site-wrapper {
+  // Override the main bg with bg-alt for visual distinction
+  background-color: var(--color-bg-alt);
+}
+
+.scene--thanks {
+  .scene__thanks-graphic {
+    max-width: 280px;
+    margin: 0 auto 20px;
+  }
+}

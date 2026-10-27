@@ -1,0 +1,27 @@
+{
+  "_sounds-BhCnqQP_.js": {
+    "file": "chunks/sounds-BhCnqQP_.js",
+    "name": "sounds"
+  },
+  "src/game.ts": {
+    "file": "game.bundle.js",
+    "name": "game",
+    "src": "src/game.ts",
+    "isEntry": true,
+    "imports": [
+      "_sounds-BhCnqQP_.js"
+    ]
+  },
+  "src/site.ts": {
+    "file": "site.bundle.js",
+    "name": "site",
+    "src": "src/site.ts",
+    "isEntry": true,
+    "imports": [
+      "_sounds-BhCnqQP_.js"
+    ],
+    "css": [
+      "style.css"
+    ]
+  }
+}

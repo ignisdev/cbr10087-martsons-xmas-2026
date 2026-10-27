@@ -1,0 +1,130 @@
+// =============================================================================
+// _layout.scss — Site wrapper, scene container, two-layer background system
+// =============================================================================
+
+// ── Site wrapper ─────────────────────────────────────────────────────────────
+// The .site-wrapper provides the max-width container and the layered background.
+// Layer 1 (furthest back):  var(--color-bg) solid colour fallback
+// Layer 2:                  var(--asset-bg-base) — plain brand background image
+// Layer 3:                  var(--asset-bg-deco) — decorative per-page layer
+// These are overridden per page by BPM CSS var injection.
+
+.site-wrapper {
+  max-width: var(--site-max-width);
+  min-height: 100vh;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+
+  // Three-layer background (all driven by CSS custom properties)
+  background-color: var(--color-bg);
+  background-image: var(--asset-bg-deco), var(--asset-bg-base);
+  background-position: var(--asset-bg-deco-position), center center;
+  background-size: var(--asset-bg-deco-size), cover;
+  background-repeat: no-repeat, no-repeat;
+}
+
+// ── Scene container ──────────────────────────────────────────────────────────
+// All page content sits inside a .scene. Full viewport height, flex column.
+
+.scene {
+  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: var(--scene-padding-y) var(--scene-padding-x);
+  position: relative;
+  text-align: center;
+
+  // Brand logo — pinned to top
+  &__brand-logo {
+    width: auto;
+    max-height: 60px;
+    max-width: 180px;
+    margin-bottom: 24px;
+  }
+
+  // Partner logo
+  &__partner-logo {
+    width: auto;
+    max-height: 48px;
+    max-width: 140px;
+  }
+
+  // Hero / product image
+  &__hero {
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto 20px;
+  }
+
+  // Headline graphic (image replacing h1)
+  &__headline-graphic {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto 20px;
+  }
+
+  // Text headline (when no headline-graphic is set)
+  &__headline {
+    font-family: var(--font-primary);
+    font-size: var(--text-3xl);
+    font-weight: var(--font-weight-black);
+    text-transform: uppercase;
+    line-height: 1.1;
+    margin-bottom: 16px;
+    color: var(--color-text);
+  }
+
+  &__subheadline {
+    font-size: var(--text-lg);
+    margin-bottom: 20px;
+    color: var(--color-text-muted);
+  }
+
+  &__copy {
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: var(--color-text-muted);
+    max-width: 320px;
+    margin: 0 auto 24px;
+  }
+
+  &__prize-name {
+    font-size: var(--text-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-accent);
+    margin-bottom: 8px;
+  }
+
+  &__prize-value {
+    font-size: var(--text-lg);
+    margin-bottom: 24px;
+    color: var(--color-text-muted);
+  }
+
+  // Footer strip — sits at the bottom of the scene
+  &__footer {
+    margin-top: auto;
+    height: 110px;
+    flex: 0 0 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 16px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    width: 100%;
+  }
+}
+
+// ── Form container ───────────────────────────────────────────────────────────
+
+.form-container {
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+}
