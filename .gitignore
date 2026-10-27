@@ -1,12 +1,8 @@
 # ── Allowlist approach: ignore everything, then opt-in ────────────────────────
 *
 
-# Keep this file + the project docs
+# Keep this file (root .md docs stay local only — not tracked)
 !.gitignore
-!CLAUDE.md
-!AGENTS.md
-!skills.md
-!XMAS_PROMO.md
 
 # Keep wp-content tree (exceptions below strip the unwanted parts back out)
 !wp-content/
@@ -84,3 +80,5 @@ Desktop.ini
 *.sublime-workspace
 AGENTS.md
 CLAUDE.md
+# Stripe SDK README contains a docs example sk_test key that trips GitHub push protection
+wp-content/themes/pepsi-xmas-drop/vendor/stripe/stripe-php/*.md
