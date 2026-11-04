@@ -102,8 +102,8 @@
 .page-photo__upload-btn {
 	width: calc(var(--u) * 189) !important;     // 98px at reference
 	padding: 0 !important;
-	background: var(--pf-color-primary) !important;
-	color: #fff !important;
+	background: var(--pf-button-bg) !important;
+	color: var(--pf-button-text) !important;
 }
 
 .page-photo__upload-btn:disabled {

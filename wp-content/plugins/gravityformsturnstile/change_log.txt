@@ -1,3 +1,7 @@
+### 1.5.1 | 2026-10-15
+- Updated Turnstile field so that it can’t be placed in a repeater or duplicated in the form editor.
+- Fixed an issue where the Turnstile widget disappears after a failed submission.
+
 ### 1.5.0 | 2026-02-19
 - Added support for Turnstile sizing options (normal, flexible, and compact).
 - Updated the add-on to use the new [versioning system](https://docs.gravityforms.com/version-numbering/).

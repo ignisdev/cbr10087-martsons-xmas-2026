@@ -41,8 +41,6 @@ get_header();
 	min-width: 98px;
 	max-width: 98px;
 	padding: 0;
-	background: #0025ff;
-	color: #fff;
 	text-decoration: none;
 	display: inline-flex;
 	align-items: center;

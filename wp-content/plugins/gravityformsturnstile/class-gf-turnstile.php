@@ -259,6 +259,7 @@ class GFTurnstile extends GFAddon {
 			array(
 				'handle'    => 'gform_turnstile_vendor_script',
 				'src'       => 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit',
+				'version'   => null,
 				'in_footer' => true,
 			),
 			array(

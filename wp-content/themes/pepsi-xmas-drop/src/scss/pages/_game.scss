@@ -340,8 +340,8 @@
 	height: calc(var(--u) * 106);
 	margin: 0;
 	border-radius: 999px;
-	background: #0025ff;
-	color: #fff;
+	background: var(--pf-button-bg);
+	color: var(--pf-button-text);
 	font-family: 'PepsiOwners-Compressed', sans-serif;
 	font-size: calc(var(--u) * 43);
 	line-height: calc(var(--u) * 106);

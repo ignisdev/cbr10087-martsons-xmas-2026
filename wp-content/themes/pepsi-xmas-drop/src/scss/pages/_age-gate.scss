@@ -319,8 +319,8 @@
 	min-width: calc(var(--u) * 189) !important;
 	max-width: calc(var(--u) * 189) !important;
 	padding: 0 !important;
-	background: #0025ff !important;
-	color: #fff !important;
+	background: var(--pf-button-bg) !important;
+	color: var(--pf-button-text) !important;
 }
 
 .page-age-gate__form.is-step-dob .gform_previous_button {
@@ -394,8 +394,8 @@
 	width: 302px !important;
 	max-width: 302px !important;
 	padding: 0 !important;
-	background: #0025ff !important;
-	color: #fff !important;
+	background: var(--pf-button-bg) !important;
+	color: var(--pf-button-text) !important;
 }
 
 .page-age-gate__form.is-step-contact input.gform_button,
@@ -404,8 +404,8 @@
 	min-width: 98px !important;
 	max-width: 98px !important;
 	padding: 0 !important;
-	background: #0025ff !important;
-	color: #fff !important;
+	background: var(--pf-button-bg) !important;
+	color: var(--pf-button-text) !important;
 }
 
 /* ─── Checkbox — circular pill style ──────────────────────────────────────── */

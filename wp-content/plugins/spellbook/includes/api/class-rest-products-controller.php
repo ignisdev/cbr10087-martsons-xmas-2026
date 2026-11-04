@@ -265,23 +265,8 @@ class GravityPerks_REST_Products_Controller extends WP_REST_Controller {
 		$upgrader = new Plugin_Upgrader( $skin );
 		$result   = $upgrader->install( $product->download_link );
 
-		if ( is_wp_error( $result ) ) {
-			return new WP_Error(
-				'installation_failed',
-				$result->get_error_message(),
-				array( 'status' => 500 )
-			);
-		}
-
-		if ( is_wp_error( $skin->result ) ) {
-			return new WP_Error(
-				'installation_failed',
-				$skin->result->get_error_message(),
-				array( 'status' => 500 )
-			);
-		}
-
-		if ( $skin->get_errors()->has_errors() ) {
+		// The AJAX skin combines each error message with any user-facing string data supplied by WordPress.
+		if ( is_wp_error( $result ) || is_wp_error( $skin->result ) || $skin->get_errors()->has_errors() ) {
 			return new WP_Error(
 				'installation_failed',
 				$skin->get_error_messages(),

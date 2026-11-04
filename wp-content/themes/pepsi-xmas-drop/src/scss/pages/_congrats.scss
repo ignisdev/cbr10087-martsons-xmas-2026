@@ -46,8 +46,8 @@ body.page-template-page-thanks-php {
 	height: var(--pf-control-height);
 	line-height: 1;
 	margin: 28px auto 0;
-	background: #0025ff !important;
-	color: #fff !important;
+	background: var(--pf-button-bg) !important;
+	color: var(--pf-button-text) !important;
 	text-decoration: none;
 	font-size: 22px !important;
 	font-family: 'PepsiOwners-Compressed', sans-serif !important;
@@ -82,8 +82,8 @@ body.page-template-page-thanks-php {
 }
 
 .page-stripe-verify__cta {
-	background: #0025ff !important;
-	color: #fff !important;
+	background: var(--pf-button-bg) !important;
+	color: var(--pf-button-text) !important;
 }
 
 .page-stripe-verify__cancel {
@@ -382,8 +382,8 @@ body.page-template-page-thanks-php {
 	appearance: none;
 	display: inline-block;
 	width: auto;
-	background: #0025ff !important;
-	color: #fff !important;
+	background: var(--pf-button-bg) !important;
+	color: var(--pf-button-text) !important;
 	border: none;
 	border-radius: 999px !important;
 	-webkit-border-radius: 999px !important;
@@ -395,12 +395,12 @@ body.page-template-page-thanks-php {
 	padding: 14px 40px !important;
 	cursor: pointer;
 	line-height: 1 !important;
-	transition: background 0.2s ease, transform 0.18s ease;
+	transition: filter 0.2s ease, transform 0.18s ease;
 }
 
 .congrats-form .gform_button:hover,
 .congrats-form input[type='submit']:hover {
-	background: #001ecc !important;
+	filter: brightness(1.08);
 	transform: scale(1.04);
 }
 

@@ -4,7 +4,7 @@
 Plugin Name: Gravity Forms Cloudflare Turnstile Add-On
 Plugin URI: https://gravityforms.com
 Description: Integrates Gravity Forms with Turnstile, a reCAPTCHA replacement from Cloudflare.
-Version: 1.5.0
+Version: 1.5.1
 Author: Gravity Forms
 Author URI: https://gravityforms.com
 License: GPL-2.0+
@@ -34,7 +34,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die();
 }
 
-define( 'GF_TURNSTILE_VERSION', '1.5.0' );
+define( 'GF_TURNSTILE_VERSION', '1.5.1' );
 
 // If Gravity Forms is loaded, bootstrap the Turnstile Add-On.
 add_action( 'gform_loaded', array( 'GF_Turnstile_Bootstrap', 'load' ), 5 );

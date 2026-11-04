@@ -7,4 +7,8 @@
   --pf-control-height: 50px;
   --pf-control-radius: 999px;
   --pf-control-font-size: 20px;
+  // Gold button / pill skin (Marston's). Stretched to the button box — the
+  // shading only runs horizontally, so any width reads correctly.
+  --pf-button-bg: url('../images/marstons/3x/button_graphic.png') center / 100% 100% no-repeat;
+  --pf-button-text: #000;
 }

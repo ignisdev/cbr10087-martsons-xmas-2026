@@ -23,6 +23,24 @@ class GF_Field_Turnstile extends GF_Field {
 	public $type = 'turnstile';
 
 	/**
+	 * Whether there can be more than one of this field type per form.
+	 *
+	 * @since 1.5.1
+	 *
+	 * @var bool
+	 */
+	public $duplicatable = false;
+
+	/**
+	 * Whether the field can be used in a repeater.
+	 *
+	 * @since 1.5.1
+	 *
+	 * @var bool
+	 */
+	public $repeatable = false;
+
+	/**
 	 * Field is display only.
 	 *
 	 * @since 1.0
@@ -139,13 +157,8 @@ class GF_Field_Turnstile extends GF_Field {
 			$data_size = gf_turnstile()->get_plugin_setting( 'data-size' );
 		}
 
-		$has_previous_response = ! $this->failed_validation && ! empty( $this->get_value_submission( array() ) );
 		// Always output the widget container, rendering the actual widget is controlled by the JS side.
 		$div = '<div class="cf-turnstile" id="cf-turnstile_' . $this->formId . '" data-js-turnstile data-response-field-name="cf-turnstile-response_' . $this->formId . '" data-theme="' . esc_attr( $theme ) . '" data-size="' . esc_attr( $data_size ) . '" data-sitekey="' . esc_attr( $key ) . '"></div>' ;
-		// If the challenge was already solved add the token so in multipage forms it could be validated after submitting the last page.
-		if ( $has_previous_response ) {
-			$div .= '<input class="cf-previous-response" name="cf-turnstile-response_' . $this->formId . '" type="hidden" value="' . $this->get_value_submission( array() ) . '">';
-		}
 
 		return sprintf( "<div class='ginput_container ginput_container_turnstile'>%s</div>", $div );
 	}

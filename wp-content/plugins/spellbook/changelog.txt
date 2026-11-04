@@ -1,6 +1,10 @@
 
 # Changelog
 
+## 3.0.32 | October 21, 2026
+
+- Improved PHP compatibility error reporting during plugin installation.
+
 ## 3.0.31 | September 30, 2026
 
 - Fixed issue where the separator above the Spellbook menu item pushed the next top-level admin menu item out of alignment when no item appeared below Gravity Forms' Help item in the Forms menu.

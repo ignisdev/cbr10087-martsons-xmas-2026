@@ -12,6 +12,10 @@
       "_sounds-BhCnqQP_.js"
     ]
   },
+  "src/images/marstons/3x/button_graphic.png": {
+    "file": "assets/button_graphic.png",
+    "src": "src/images/marstons/3x/button_graphic.png"
+  },
   "src/site.ts": {
     "file": "site.bundle.js",
     "name": "site",
@@ -22,6 +26,9 @@
     ],
     "css": [
       "style.css"
+    ],
+    "assets": [
+      "assets/button_graphic.png"
     ]
   }
 }
