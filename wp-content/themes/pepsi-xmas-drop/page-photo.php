@@ -49,7 +49,9 @@ get_header();
 
 			<input type="file" id="photoInput" data-js="photo-proxy-input" accept="image/*" capture="environment" tabindex="-1" aria-hidden="true">
 
-			<button type="button" id="uploadButton" data-js="photo-upload-btn" class="pepsi-pill-button page-photo__upload-btn">Upload</button>
+			<div class="pf-cta-dock">
+				<button type="button" id="uploadButton" data-js="photo-upload-btn" class="pepsi-pill-button page-photo__upload-btn">Upload</button>
+			</div>
 
 			<?php if ( $gf_id > 0 ) : ?>
 				<div id="gf-photo-form" data-js="photo-gf-wrap">
@@ -59,7 +61,6 @@ get_header();
 				<p class="page-photo__notice">Photo form not configured. Set the <strong>photo</strong> form ID in BPM &rarr; Brand Config &rarr; Form IDs.</p>
 			<?php endif; ?>
 
-			<a class="terms-link page-photo__terms-link" id="termsOpen" data-terms-open href="#">Terms &amp; Conditions</a>
 		</div>
 
 	</div>

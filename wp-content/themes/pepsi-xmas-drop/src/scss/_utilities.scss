@@ -14,3 +14,24 @@
   white-space: nowrap;
   border: 0;
 }
+
+/* Gold gradient text — same gold as the button skin (colours sampled from
+   marstons/3x/button_graphic.png). For live copy that can't be a baked
+   graphic, e.g. the winner's prize amount on the claim page. Put it on each
+   line (display:block) so the gradient spans that line's width. */
+.pf-gold-text {
+  background: linear-gradient(
+    90deg,
+    #e9ba55 0%,
+    #c18125 18%,
+    #f0c45d 40%,
+    #ffd76d 50%,
+    #efc25c 60%,
+    #bd7d21 80%,
+    #f1c45d 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: #e9ba55; // fallback where background-clip:text isn't supported
+}

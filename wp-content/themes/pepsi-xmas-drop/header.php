@@ -58,3 +58,15 @@ if ( ! $terms_page ) {
 	</div>
 </div>
 <div class="site-wrapper"<?php echo $pepsi_site_wrapper_style !== '' ? ' style="' . esc_attr( $pepsi_site_wrapper_style ) . '"' : ''; ?>>
+<?php
+// Shared site header — the partner-brands banner (BPM Brand Config → Brand Logo,
+// theme fallback src/images/marstons/brands_banner.png). Skipped on /game/.
+if ( function_exists( 'pf_site_chrome_enabled' ) && pf_site_chrome_enabled() ) :
+	$pf_header_banner_url = pf_site_chrome_asset_url( 'brand_logo' );
+	?>
+	<header class="site-header">
+		<?php if ( $pf_header_banner_url !== '' ) : ?>
+			<img class="site-header__banner" src="<?php echo esc_url( $pf_header_banner_url ); ?>" alt="Pepsi and partner brands" />
+		<?php endif; ?>
+	</header>
+<?php endif; ?>

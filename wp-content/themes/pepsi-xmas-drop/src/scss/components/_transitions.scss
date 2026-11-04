@@ -27,6 +27,10 @@ body.page-template-page-game-php #pf-page-overlay {
 }
 
 // ── Entrance keyframe ──────────────────────────────────────────────────────────
+// Always run with fill-mode `backwards`, never `both`/`forwards`: a held end
+// transform (even an identity one) makes the element the containing block for
+// position:fixed descendants, which drags .pf-cta-dock buttons off the bottom
+// of the screen. `backwards` holds the start frame through the delay only.
 
 @keyframes pf-enter {
 	from {
@@ -35,7 +39,7 @@ body.page-template-page-game-php #pf-page-overlay {
 	}
 	to {
 		opacity: 1;
-		transform: translateY(0) scale(1);
+		transform: none;
 	}
 }
 
@@ -43,15 +47,15 @@ body.page-template-page-game-php #pf-page-overlay {
 
 body.page-template-page-photo-php {
 	.page-photo__title {
-		animation: pf-enter 0.55s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+		animation: pf-enter 0.55s 0.1s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 	}
 
 	.page-photo__camera {
-		animation: pf-enter 0.55s 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+		animation: pf-enter 0.55s 0.22s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 	}
 
 	.page-photo__upload-btn {
-		animation: pf-enter 0.55s 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+		animation: pf-enter 0.55s 0.35s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 	}
 }
 
@@ -60,15 +64,15 @@ body.page-template-page-photo-php {
 body.page-template-page-age-gate-php {
 	.scene__hero,
 	.page-age-gate__hero {
-		animation: pf-enter 0.55s 0.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+		animation: pf-enter 0.55s 0.05s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 	}
 
 	.page-age-gate__headline-wrap {
-		animation: pf-enter 0.55s 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+		animation: pf-enter 0.55s 0.2s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 	}
 
 	.page-age-gate__form {
-		animation: pf-enter 0.55s 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+		animation: pf-enter 0.55s 0.35s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 	}
 }
 
@@ -76,7 +80,7 @@ body.page-template-page-age-gate-php {
 
 body.page-template-page-how-to-play-php {
 	.page-how-to-play__panel--instructions {
-		animation: pf-enter 0.55s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+		animation: pf-enter 0.55s 0.1s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 	}
 }
 
@@ -87,6 +91,6 @@ body.page-template-page-non-winner-php,
 body.page-template-page-prize-paid-php,
 body.page-template-page-thanks-php {
 	.congrats-page {
-		animation: pf-enter 0.5s 0.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+		animation: pf-enter 0.5s 0.1s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 	}
 }

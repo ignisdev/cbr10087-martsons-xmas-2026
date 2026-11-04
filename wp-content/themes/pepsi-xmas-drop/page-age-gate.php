@@ -90,7 +90,6 @@ if ( $gf_available && $age_gate_form_id > 0 && class_exists( 'GFAPI' ) ) {
 					<p class="date-of-birth-form__errors">Age Gate form is not configured. Set it in BPM → Form Mapping.</p>
 				<?php endif; ?>
 			</div>
-			<a href="#" id="termsOpen" class="terms-link u-hidden" data-js="age-gate-terms-link">Terms &amp; Conditions</a>
 		</div>
 	</div>
 </main>

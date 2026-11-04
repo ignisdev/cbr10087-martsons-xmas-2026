@@ -80,6 +80,17 @@ function pf_page_context( string $page_key, array $opts = [] ): array {
 		? pepsi_asset_style_attr( 'partner_logo' )
 		: '';
 
+	// Theme-bundled defaults (src/images/marstons) for anything BPM leaves empty.
+	if ( (string) $bg_deco_url === '' ) {
+		$bg_deco_url = pf_theme_asset_fallback_url( 'bg_deco_image', $page_key );
+	}
+	if ( (string) $brand_logo_url === '' ) {
+		$brand_logo_url = pf_theme_asset_fallback_url( 'brand_logo' );
+	}
+	if ( (string) $partner_logo_url === '' ) {
+		$partner_logo_url = pf_theme_asset_fallback_url( 'partner_logo' );
+	}
+
 	$ctx = [
 		'page_key'           => $page_key,
 		'bg_deco'            => $bg_deco,
@@ -108,6 +119,10 @@ function pf_page_context( string $page_key, array $opts = [] ): array {
 			$url = function_exists( 'pepsi_resolve_asset_url' )
 				? pepsi_resolve_asset_url( $slot, $page_key )
 				: ( function_exists( 'bpm_img_url' ) ? (string) bpm_img_url( $slot, $page_key ) : '' );
+		}
+
+		if ( (string) $url === '' ) {
+			$url = pf_theme_asset_fallback_url( $slot, $page_key );
 		}
 
 		$style = function_exists( 'pepsi_page_asset_style_attr' )
@@ -178,4 +193,74 @@ function pf_render_partner_logo( array $ctx, string $extra_class = '' ): void {
 		esc_url( $ctx['partner_logo_url'] ),
 		esc_attr( $ctx['partner_logo_style'] )
 	);
+}
+
+
+/**
+ * Theme-bundled default for an asset slot — used only when BPM has nothing set,
+ * so a BPM upload always wins and a fresh install still looks right.
+ *
+ * Global slots (brand_logo / partner_logo) ignore $page. Per-page slots check
+ * the page key first, then the '*' default.
+ *
+ * @param string      $slot  BPM slot key (e.g. 'brand_logo', 'bg_deco_image').
+ * @param string|null $page  BPM page key (e.g. 'age-gate'), null for global slots.
+ * @return string Absolute URL, or '' when the theme has no default.
+ */
+function pf_theme_asset_fallback_url( string $slot, ?string $page = null ): string {
+	$map = (array) apply_filters( 'pf_theme_asset_fallbacks', [
+		'global' => [
+			'brand_logo'   => 'marstons/brands_banner.png',       // site header banner
+			'partner_logo' => 'marstons/drink_responsbility.png', // site footer line
+		],
+		'pages'  => [
+			'age-gate'    => [
+				'bg_deco_image'    => 'marstons/background_marstons.png',
+				'headline_graphic' => 'marstons/3x/win_the_xmas_drop.png',
+			],
+			'how-to-play' => [
+				'header_graphic' => 'marstons/ok_play.png',
+				'hero_image'     => 'marstons/how_to_play.png',
+			],
+			// Photo + game draw their own backgrounds — no default.
+			'photo'       => [ 'bg_deco_image' => '' ],
+			'game'        => [ 'bg_deco_image' => '' ],
+			'*'           => [
+				'bg_deco_image' => 'marstons/background_alt.png',
+			],
+		],
+	] );
+
+	$file = '';
+	if ( isset( $map['global'][ $slot ] ) ) {
+		$file = (string) $map['global'][ $slot ];
+	} elseif ( $page !== null && isset( $map['pages'][ $page ][ $slot ] ) ) {
+		$file = (string) $map['pages'][ $page ][ $slot ];
+	} elseif ( isset( $map['pages']['*'][ $slot ] ) ) {
+		$file = (string) $map['pages']['*'][ $slot ];
+	}
+
+	if ( $file === '' || ! file_exists( get_template_directory() . '/src/images/' . $file ) ) {
+		return '';
+	}
+	return get_template_directory_uri() . '/src/images/' . $file;
+}
+
+/**
+ * Does this request get the shared site header + footer (logo banner, T&C
+ * link, drinkaware line)? Everything except /game/, which owns its own
+ * fixed-aspect stage and header.
+ */
+function pf_site_chrome_enabled(): bool {
+	return ! is_page_template( 'page-game.php' );
+}
+
+/**
+ * Header banner / footer line URL for the shared site chrome.
+ *
+ * @param string $slot 'brand_logo' (header) or 'partner_logo' (footer).
+ */
+function pf_site_chrome_asset_url( string $slot ): string {
+	$url = function_exists( 'pepsi_resolve_asset_url' ) ? pepsi_resolve_asset_url( $slot, null ) : '';
+	return $url !== '' ? $url : pf_theme_asset_fallback_url( $slot );
 }

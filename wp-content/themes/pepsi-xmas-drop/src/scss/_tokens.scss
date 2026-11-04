@@ -11,4 +11,18 @@
   // shading only runs horizontally, so any width reads correctly.
   --pf-button-bg: url('../images/marstons/3x/button_graphic.png') center / 100% 100% no-repeat;
   --pf-button-text: #000;
+
+  // Site chrome (header banner / footer / CTA dock) — see base/_layout.scss.
+  // Heights follow the artwork aspect ratios so the images never crop.
+  --pf-page-w: min(100vw, 430px);
+  --pf-header-banner-w: calc(var(--pf-page-w) * 0.88);
+  --pf-header-pad-b: 10px;
+  --pf-header-h: calc(var(--pf-header-banner-w) * 126 / 1089 + 26px + var(--pf-header-pad-b)); // brands_banner.png 1089×126
+  --pf-footer-line-w: calc(var(--pf-page-w) * 0.62);
+  --pf-footer-terms-size: 12px;
+  --pf-footer-gap: 14px;
+  --pf-footer-pad-b: 16px;
+  --pf-footer-h: calc(var(--pf-footer-line-w) * 54 / 817 + var(--pf-footer-terms-size) + var(--pf-footer-gap) + var(--pf-footer-pad-b) + 10px + env(safe-area-inset-bottom, 0px)); // drink_responsbility.png 817×54
+  --pf-cta-gap: 10px;   // CTA bottom edge → top of footer
+  --pf-cta-zone: calc(var(--pf-control-height) + var(--pf-cta-gap) + 16px);
 }

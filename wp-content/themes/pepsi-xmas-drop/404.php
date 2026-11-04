@@ -43,7 +43,9 @@ get_header();
 
 		<p class="congrats-sorry__sub">Let's get you back<br/> to where you started.</p>
 
-		<a class="pepsi-pill-button page-non-winner__try-again" href="<?php echo esc_url( $age_gate_url ); ?>">HOME</a>
+		<div class="pf-cta-dock">
+			<a class="pepsi-pill-button page-non-winner__try-again" href="<?php echo esc_url( $age_gate_url ); ?>">HOME</a>
+		</div>
 
 	</div>
 

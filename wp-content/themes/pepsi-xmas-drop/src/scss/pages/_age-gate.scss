@@ -15,6 +15,11 @@
 .page-age-gate {
 	position: relative;
 	height: 100dvh;
+	box-sizing: border-box;
+	margin-top: calc(-1 * var(--pf-header-h));
+	margin-bottom: calc(-1 * var(--pf-bottom-reserve));
+	padding-top: var(--pf-header-h);
+	padding-bottom: var(--pf-bottom-reserve);
 	overflow: hidden;
 	background-color: #000; // letterbox around the stage
 
@@ -22,7 +27,9 @@
 	// height-limited width, whichever is smaller. Viewport units only, so
 	// --u means the same on this element, the scene and every descendant.
 	--ag-bw: min(100vw, 430px);
-	--ag-sw: min(var(--ag-bw), 100dvh * 829 / 1793);
+	// Stage fits the height left between the site header and footer
+	// (base/_layout.scss); the background still runs under both, edge to edge.
+	--ag-sw: min(var(--ag-bw), var(--pf-content-h) * 829 / 1793);
 	--u: calc(var(--ag-sw) / 829);
 
 	background-image: var(--age-gate-bg);

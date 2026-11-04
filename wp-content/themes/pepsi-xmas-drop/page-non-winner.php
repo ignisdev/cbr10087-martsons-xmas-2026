@@ -34,7 +34,9 @@ get_header();
 
 		<p class="congrats-sorry__sub">You can try up to<br/> 3 times each day.</p>
 
-		<a class="pepsi-pill-button page-non-winner__try-again" href="<?php echo esc_url( home_url( '/' ) ); ?>">Buy another Pepsi</a>
+		<div class="pf-cta-dock">
+			<a class="pepsi-pill-button page-non-winner__try-again" href="<?php echo esc_url( home_url( '/' ) ); ?>">Buy another Pepsi</a>
+		</div>
 
 	</div>
 

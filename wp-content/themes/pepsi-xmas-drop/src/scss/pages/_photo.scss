@@ -8,17 +8,24 @@
 .page-photo {
 	position: relative;
 	height: 100dvh;
+	box-sizing: border-box;
+	margin-top: calc(-1 * var(--pf-header-h));
+	margin-bottom: calc(-1 * var(--pf-bottom-reserve));
+	padding-top: var(--pf-header-h);
+	padding-bottom: var(--pf-bottom-reserve);
 	overflow: hidden;
 	background-color: #000; // letterbox around the stage
 
 	--pp-bw: min(100vw, 430px);
-	--pp-sw: min(var(--pp-bw), 100dvh * 829 / 1793);
+	// Stage fits the height left between the site header and footer
+	// (base/_layout.scss); the background still runs under both, edge to edge.
+	--pp-sw: min(var(--pp-bw), var(--pf-content-h) * 829 / 1793);
 	--u: calc(var(--pp-sw) / 829);
 
 	background-image: var(--photo-bg);
 	background-repeat: no-repeat;
 	background-size: var(--pp-sw) auto;
-	background-position: 50% 0;
+	background-position: 50% var(--pf-header-h); // aligned with the stage, below the header
 
 	--pf-control-height: calc(var(--u) * 96);    // 50px at reference
 	--pf-control-font-size: calc(var(--u) * 39); // 20px at reference
@@ -119,4 +126,11 @@
 	color: #fff;
 	font-size: calc(var(--u) * 27);
 	text-align: center;
+}
+
+// Docked Upload button uses the site-wide control size (not the stage-scaled
+// one above) so it matches every other page's CTA.
+.page-photo .pf-cta-dock {
+	--pf-control-height: 50px;
+	--pf-control-font-size: 20px;
 }

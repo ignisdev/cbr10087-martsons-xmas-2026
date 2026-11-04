@@ -110,6 +110,31 @@ body.page-template-page-thanks-php {
 	white-space: nowrap;
 }
 
+.congrats-win {
+	margin: 0;
+	font-family: 'PepsiOwners-Compressed', sans-serif;
+	font-weight: 400;
+	line-height: 0.92;
+	text-transform: uppercase;
+	text-align: center;
+}
+
+// Each line is its own gold block so the gradient spans that line's width.
+.congrats-win__line,
+.congrats-win__amount {
+	display: block;
+	width: fit-content;
+	margin-inline: auto;
+}
+
+.congrats-win__line {
+	font-size: clamp(2rem, 11vw, 3rem);
+}
+
+.congrats-win__amount {
+	font-size: clamp(3.5rem, 22vw, 6rem);
+}
+
 .congrats-sub {
 	font-family: 'PepsiOwners-Compressed', sans-serif;
 	font-size: clamp(1rem, 5vw, 1.15rem);

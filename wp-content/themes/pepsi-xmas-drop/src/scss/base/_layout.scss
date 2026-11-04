@@ -35,13 +35,18 @@ body.page-template-page-game-php {
 	}
 }
 
-/* Standard layout — flex column with footer pinned to viewport bottom.
-   Used on every page. Pages without a footer (game, age-gate) simply
-   skip rendering .scene__footer in footer.php. */
-
-:root {
-	--pf-footer-h: 80px;
-}
+/* ─── Site chrome: header banner · content · CTA dock · footer ────────────────
+   Every page except /game/ gets the same frame (header.php / footer.php):
+     .site-header  — partner-brands banner, fixed to the top
+     .site-footer  — T&C link + drink-responsibly line, fixed to the bottom
+     .pf-cta-dock  — a page's primary button, fixed just above the footer so
+                     it sits in the same place on every screen
+   The wrapper reserves room for them with padding; two vars carry the sizes
+   down to page styles:
+     --pf-bottom-reserve  footer height (+ the CTA zone when a dock is present)
+     --pf-content-h       viewport height left for page content
+   Full-bleed "stage" pages (age gate, photo) cancel the padding with negative
+   margins so their background still runs edge to edge. Sizes: _tokens.scss. */
 
 .site-wrapper {
 	position: relative;
@@ -50,6 +55,20 @@ body.page-template-page-game-php {
 	display: flex;
 	flex-direction: column;
 	background-repeat: no-repeat;
+
+	--pf-bottom-reserve: 0px;
+	--pf-content-h: 100dvh;
+}
+
+.site-wrapper:has(> .site-header) {
+	--pf-bottom-reserve: var(--pf-footer-h);
+	--pf-content-h: calc(100dvh - var(--pf-header-h) - var(--pf-bottom-reserve));
+	padding-top: var(--pf-header-h);
+	padding-bottom: var(--pf-bottom-reserve);
+}
+
+.site-wrapper:has(> .site-header):has(.pf-cta-dock) {
+	--pf-bottom-reserve: calc(var(--pf-footer-h) + var(--pf-cta-zone));
 }
 
 .site-wrapper > main {
@@ -58,26 +77,87 @@ body.page-template-page-game-php {
 	min-height: 0;
 }
 
-.site-wrapper > .scene__footer {
-	position: relative;
-	flex: 0 0 auto;
-	margin-top: auto;
-	height: var(--pf-footer-h);
-	display: flex;
-	align-items: flex-end;
-	justify-content: center;
-	padding-bottom: 30px;
-	z-index: 10;
-}
-
-/* When .scene appears inside a main with a footer, leave room for the footer
-   so its absolutely-positioned children (e.g. how-to-play panels) don't sit
-   under the logo. Pages without a footer can override this on their scene. */
-.scene {
-	min-height: calc(100dvh - var(--pf-footer-h));
+.site-header,
+.site-footer {
+	position: fixed;
+	left: 50%;
+	width: var(--pf-page-w);
+	transform: translateX(-50%);
 	display: flex;
 	flex-direction: column;
-	// justify-content: center;
+	align-items: center;
+	z-index: 40; // above page content + CTA dock, below the T&C modal (1200)
+}
+
+.site-header {
+	top: 0;
+	height: var(--pf-header-h);
+	justify-content: flex-end;
+	padding-bottom: var(--pf-header-pad-b);
+	pointer-events: none;
+	background: linear-gradient(to bottom, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0));
+}
+
+.site-header__banner {
+	display: block;
+	width: var(--pf-header-banner-w);
+	height: auto;
+}
+
+.site-footer {
+	bottom: 0;
+	height: var(--pf-footer-h);
+	justify-content: flex-end;
+	gap: var(--pf-footer-gap);
+	padding-bottom: calc(var(--pf-footer-pad-b) + env(safe-area-inset-bottom, 0px));
+	background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+}
+
+.site-footer__terms {
+	margin: 0;
+	color: #fff;
+	font-family: var(--pf-font-body);
+	font-size: var(--pf-footer-terms-size);
+	line-height: 1;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	text-decoration: none;
+}
+
+.site-footer__drinkaware {
+	display: block;
+	width: var(--pf-footer-line-w);
+	height: auto;
+}
+
+/* Age gate DOB step: the mockup shows no T&C link there (it appears from the
+   contact step on, as before). Hidden, not removed, so the footer keeps its height. */
+body:has(.page-age-gate):not(:has(.is-step-contact)) .site-footer__terms {
+	visibility: hidden;
+}
+
+/* Primary CTA — same spot on every page, just above the footer. */
+.pf-cta-dock {
+	position: fixed;
+	left: 50%;
+	bottom: calc(var(--pf-footer-h) + var(--pf-cta-gap));
+	width: var(--pf-page-w);
+	transform: translateX(-50%);
+	display: flex;
+	justify-content: center;
+	z-index: 30;
+	pointer-events: none; // only the button itself takes taps
+
+	> * {
+		pointer-events: auto;
+	}
+}
+
+/* Page content fills whatever height the chrome leaves. */
+.scene {
+	min-height: var(--pf-content-h);
+	display: flex;
+	flex-direction: column;
 }
 
 .prize-status-card {
@@ -111,4 +191,9 @@ body.page-template-page-game-php {
 
 .page-payout-failed__title, .page-stripe-verify__title {
 	font-size: clamp(2rem, 14vw, 3.5rem)!important;
+}
+
+// Docked buttons drop any page-level spacing — the dock places them.
+.site-wrapper .pf-cta-dock > * {
+	margin: 0;
 }

@@ -89,7 +89,9 @@ get_header();
 					</ol>
 				<?php endif; ?>
 			</div>
-			<a class="pepsi-pill-button page-how-to-play__play-btn" href="<?php echo esc_url( $game_page_url ); ?>">Play</a>
+			<div class="pf-cta-dock">
+				<a class="pepsi-pill-button page-how-to-play__play-btn" href="<?php echo esc_url( $game_page_url ); ?>">Play</a>
+			</div>
 
 		</section>
 

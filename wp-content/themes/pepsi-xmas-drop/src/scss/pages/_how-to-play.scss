@@ -21,7 +21,7 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: center; // both panels (intro header graphic; hero + steps + Play) centred vertically
-	padding: clamp(24px, 6vh, 72px) 24px;
+	padding: clamp(8px, 2vh, 24px) 24px; // tight — header, CTA dock and footer take their share
 	opacity: 0;
 	visibility: hidden;
 	pointer-events: none;
