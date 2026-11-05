@@ -94,3 +94,23 @@ body.page-template-page-thanks-php {
 		animation: pf-enter 0.5s 0.1s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 	}
 }
+
+// ── Fade-only entrance for anything holding a docked CTA ──────────────────────
+// Any transform on an ancestor — even mid-animation — makes it the containing
+// block for position:fixed children, so a docked NEXT / SUBMIT / Play / Buy
+// another button would sit mid-page and then jump to the bottom when pf-enter
+// finished. These wrappers fade in without moving; the button lands in place
+// on the first frame. (The step classes are server-rendered, so these
+// selectors already match at first paint.)
+
+@keyframes pf-fade-in {
+	from { opacity: 0; }
+	to   { opacity: 1; }
+}
+
+body.page-template-page-age-gate-php .page-age-gate__form.is-step-contact,
+body.page-template-page-how-to-play-php .page-how-to-play__panel.page-how-to-play__panel--instructions,
+body .congrats-page:has(.pf-cta-dock),
+body.page-template-page-photo-php .pf-cta-dock .page-photo__upload-btn {
+	animation-name: pf-fade-in;
+}

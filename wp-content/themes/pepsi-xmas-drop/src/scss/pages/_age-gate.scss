@@ -32,10 +32,16 @@
 	--ag-sw: min(var(--ag-bw), var(--pf-content-h) * 829 / 1793);
 	--u: calc(var(--ag-sw) / 829);
 
+	// Tree artwork: marstons/age_gate_tree.webp (BPM age-gate bg_deco_image),
+	// the full-frame wide artwork (2000 × 2395): star top ~30% down, tree base
+	// ~72% down, floor below for the DOB row. Bottom-anchored at 97.4% of the
+	// screen height (tree at 80% of a full-height crop); portrait phones only
+	// lose empty sky/floor off the sides. The sliver above it is the page's
+	// #000, which matches the artwork's top edge (#000003). One layer.
 	background-image: var(--age-gate-bg);
 	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: 50% 0%;
+	background-size: auto 97.4%;
+	background-position: 50% 100%;
 
 	--ag-shift-y: 0px;
 }
@@ -54,6 +60,8 @@
 	min-height: 100dvh;
 	overflow: visible;
 	background-image: var(--age-gate-bg-contact, var(--age-gate-bg));
+	background-size: cover;
+	background-position: 50% 0%;
 }
 
 /* Contact step: no hero title graphic. !important beats BPM's inline display:block. */
@@ -96,9 +104,14 @@
 }
 
 /* DOB step: pinned just below the tree (artwork y 1489) and sized in --u. */
+/* DOB step: docked above the footer — the input + NEXT row sits exactly where
+   every other page's CTA does, and lines up with the bottom-anchored tree
+   artwork above at any viewport size. (Not translateX-centred: pf-enter
+   animates transform on this element.) */
 .page-age-gate__form.is-step-dob {
-	position: absolute;
-	top: calc(var(--u) * 1489);
+	position: fixed;
+	top: auto;
+	bottom: calc(var(--pf-footer-h) + var(--pf-cta-gap));
 	left: 0;
 	right: 0;
 	max-width: calc(var(--u) * 598);

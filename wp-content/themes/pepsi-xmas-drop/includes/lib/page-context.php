@@ -215,7 +215,7 @@ function pf_theme_asset_fallback_url( string $slot, ?string $page = null ): stri
 		],
 		'pages'  => [
 			'age-gate'    => [
-				'bg_deco_image'    => 'marstons/background_marstons.png',
+				'bg_deco_image'    => 'marstons/age_gate_tree.webp', // wide crop; layout in _age-gate.scss is tuned to it
 				'headline_graphic' => 'marstons/3x/win_the_xmas_drop.png',
 			],
 			'how-to-play' => [
