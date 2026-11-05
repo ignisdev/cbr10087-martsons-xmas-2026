@@ -18,7 +18,7 @@ $partner_logo_style   = $ctx['partner_logo_style'];
 $images_uri           = get_template_directory_uri() . '/src/images';
 // Drop button artwork — theme file (ships with the repo). Press bounce is in
 // src/ui/drop-button.ts.
-$drop_button_image_url = $images_uri . '/pepsi_logo_button.png';
+$drop_button_image_url = $images_uri . '/marstons/drop_button.png'; // gold rings, 343×247
 $tap_hint_image_url   = $images_uri . '/hand.png';
 
 // The on-page debug bar only shows when Settings → PF Debug is ticked — being
@@ -96,10 +96,15 @@ get_header();
 	<div class="page-game__stage" data-js="game-stage">
 
 	<header class="page-game__header" data-js="game-header">
-		<img class="page-game__header-image" src="<?php echo esc_url( $images_uri . '/game_header.png' ); ?>" alt="Pepsi Xmas Drop" />
+		<?php
+		// Same partner-brands banner as the site header (BPM Brand Config →
+		// Brand Logo, theme fallback) — /game/ skips the shared site header.
+		$game_header_banner_url = function_exists( 'pf_site_chrome_asset_url' ) ? pf_site_chrome_asset_url( 'brand_logo' ) : '';
+		if ( $game_header_banner_url !== '' ) :
+			?>
+			<img class="page-game__header-image" src="<?php echo esc_url( $game_header_banner_url ); ?>" alt="Pepsi and partner brands" />
+		<?php endif; ?>
 		<p class="page-game__level" aria-live="polite" data-js="hud-level">PRACTICE</p>
-		<!-- Practice go runs first (client-only, never touches the server); this skips straight to the real game. -->
-		<button type="button" class="page-game__skip-practice" data-js="skip-practice" hidden>SKIP<br/>PRACTICE</button>
 	</header>
 
 	<!-- Three.js mounts here -->

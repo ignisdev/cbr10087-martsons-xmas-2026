@@ -176,7 +176,7 @@ async function init( canvas: HTMLCanvasElement, gamePage: HTMLElement ): Promise
 		const v   = new THREE.Vector3( 0, TREE_BOTTOM_Y, 0 ).project( camera );
 		// Just under the tree, but never pushed off the bottom of the screen.
 		const top = Math.min(
-			( -v.y * 0.5 + 0.5 ) * canvas.clientHeight + designPx( 26 ),
+			( -v.y * 0.5 + 0.5 ) * canvas.clientHeight + designPx( 70 ),
 			canvas.clientHeight - dropBtn.offsetHeight - designPx( 26 ),
 		);
 		dropBtn.style.top    = `${ Math.round( top ) }px`;
@@ -186,7 +186,8 @@ async function init( canvas: HTMLCanvasElement, gamePage: HTMLElement ): Promise
 		// pointing) fingertip on the logo. Hidden on the first drop.
 		const hand = gamePage.querySelector<HTMLElement>( '.overlay__swipe-hint-wrap' );
 		if ( hand ) {
-			const size = dropBtn.offsetWidth;
+			// Height, not width: the drop-button artwork is wider than it is tall.
+			const size = dropBtn.offsetHeight;
 			hand.style.top       = `${ Math.round( top + size * 0.5 ) }px`;
 			hand.style.left      = `${ Math.round( canvas.clientWidth / 2 + size * 0.02 ) }px`;
 			hand.style.transform = 'none';

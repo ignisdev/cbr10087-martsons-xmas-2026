@@ -24,5 +24,6 @@
   --pf-footer-pad-b: 16px;
   --pf-footer-h: calc(var(--pf-footer-line-w) * 54 / 817 + var(--pf-footer-terms-size) + var(--pf-footer-gap) + var(--pf-footer-pad-b) + 10px + env(safe-area-inset-bottom, 0px)); // drink_responsbility.png 817×54
   --pf-cta-gap: 10px;   // CTA bottom edge → top of footer
+  --pf-cta-w: calc(98px * 1.2); // docked pill width: original 98px + 20%
   --pf-cta-zone: calc(var(--pf-control-height) + var(--pf-cta-gap) + 16px);
 }

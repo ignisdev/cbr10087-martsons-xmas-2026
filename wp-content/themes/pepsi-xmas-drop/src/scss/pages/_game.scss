@@ -107,18 +107,20 @@
 	bottom: 0;
 	height: var(--game-footer-h);
 	display: flex;
-	align-items: center;
+	// Bottom-aligned with the same padding as the site footer (base/_layout.scss)
+	// so the drinkaware line sits in the same place as on every other page.
+	align-items: flex-end;
 	justify-content: center;
-	padding-bottom: calc(var(--u) * 34);
+	padding-bottom: calc(var(--pf-footer-pad-b) + env(safe-area-inset-bottom, 0px));
 	pointer-events: none;
 	z-index: 12;
 }
 
 .page-game__partner-logo {
 	display: block;
-	// Scale with the stage — overrides the fixed px width BPM sets inline
-	// (pepsi_asset_style_attr()), hence !important.
-	width: calc(var(--u) * 245) !important;
+	// Same width as the site footer's drinkaware line (--pf-footer-line-w,
+	// _tokens.scss) — overrides the px width BPM sets inline, hence !important.
+	width: var(--pf-footer-line-w) !important;
 	max-width: none !important;
 	height: auto;
 }
@@ -318,19 +320,20 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	justify-content: center;
-	gap: calc(var(--u) * 21);
-	padding: calc(var(--u) * 26) calc(var(--u) * 34) 0;
+	justify-content: flex-start;
+	gap: calc(var(--u) * 55); // banner → level pill
+	// Banner top matches the site header's (26px from the top, _tokens.scss).
+	padding: 26px calc(var(--u) * 34) 0;
 	box-sizing: border-box;
 	z-index: 12;
 	pointer-events: none;
 }
 
+// Partner-brands banner — same width as the site header's (--pf-header-banner-w),
+// capped to the stage so it never overflows a letterboxed stage.
 .page-game__header-image {
 	display: block;
-	width: auto;
-	max-width: 80%;
-	max-height: calc(var(--u) * 136);
+	width: min(var(--pf-header-banner-w), 97cqw);
 	height: auto;
 }
 
@@ -350,43 +353,20 @@
 	text-transform: uppercase;
 }
 
-// Skip-practice — right of the level pill, only while the practice go runs.
-.page-game__skip-practice {
-	position: absolute;
-	right: calc(var(--u) * 34);
-	bottom: calc(var(--u) * 30);
-	height: calc(var(--u) * 106);
-	padding: 0 calc(var(--u) * 26);
-	border: calc(var(--u) * 3) solid #fff;
-	border-radius: 999px;
-	background: transparent;
-	color: #fff;
-	font-family: 'PepsiOwners-Compressed', sans-serif;
-	font-size: calc(var(--u) * 30);
-	line-height: 1;
-	letter-spacing: 0.05em;
-	text-transform: uppercase;
-	cursor: pointer;
-	pointer-events: auto; // the header itself is pointer-events: none
-	touch-action: manipulation;
-	-webkit-tap-highlight-color: transparent;
-
-	&[hidden] {
-		display: none;
-	}
-}
-
 /* ─── Drop button — image; main.ts positions it under the tree (sets `top`) ── */
 
 .page-game__drop-btn {
 	position: absolute;
 	inset: auto 0 calc(var(--u) * 51);
 	margin: 0 auto;
-	width: calc(var(--u) * 175);  // 25% smaller than the original 233
-	height: calc(var(--u) * 175);
+	// Height unchanged (game.ts places the button by its height); width
+	// follows the drop_button.png artwork, 343 × 247.
+	// 20% smaller than the original 175-unit height.
+	width: calc(var(--u) * 140 * 343 / 247);
+	height: calc(var(--u) * 140);
 	padding: 0;
 	border: 0;
-	border-radius: 50%;
+	border-radius: 0;
 	background: none;
 	pointer-events: auto;
 	cursor: pointer;
@@ -412,5 +392,6 @@
 	display: block;
 	width: 100%;
 	height: 100%;
+	object-fit: contain;
 	pointer-events: none;
 }

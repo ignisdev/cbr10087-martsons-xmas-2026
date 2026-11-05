@@ -67,7 +67,8 @@ body.page-template-page-game-php {
 	padding-bottom: var(--pf-bottom-reserve);
 }
 
-.site-wrapper:has(> .site-header):has(.pf-cta-dock) {
+.site-wrapper:has(> .site-header):has(.pf-cta-dock),
+.site-wrapper:has(> .site-header):has(.is-step-contact) {
 	--pf-bottom-reserve: calc(var(--pf-footer-h) + var(--pf-cta-zone));
 }
 

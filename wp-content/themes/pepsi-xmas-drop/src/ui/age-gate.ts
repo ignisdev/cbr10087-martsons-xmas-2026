@@ -11,6 +11,17 @@ export function initAgeGatePage(): void {
   const headlineWrap = root.querySelector<HTMLElement>('[data-js="age-gate-headline"]');
   const formWrap = root.querySelector<HTMLElement>('[data-js="age-gate-form-wrap"]');
   const termsLink = root.querySelector<HTMLElement>('[data-js="age-gate-terms-link"]');
+  const prizeTitle = root.querySelector<HTMLElement>('[data-js="age-gate-prize-title"]');
+  const prizeStripe = root.querySelector<HTMLElement>('[data-js="age-gate-prize-stripe"]');
+
+  // The prize-pool step is whichever GF page holds the prize copy — an HTML
+  // block with CSS class `pf-prize-pool` (any HTML block as a fallback, so a
+  // form copied without the class still works). Detected by content, not page
+  // number, so steps can be reordered in the GF editor.
+  const isPrizePage = (targetFormId: number, pageNum: number): boolean => {
+    const page = document.getElementById(`gform_page_${targetFormId}_${pageNum}`);
+    return !!page?.querySelector('.pf-prize-pool, .gfield--type-html');
+  };
 
   const detectCurrentPage = (targetFormId: number): number => {
     const pages = document.querySelectorAll<HTMLElement>(`#gform_wrapper_${targetFormId} .gform_page`);
@@ -39,15 +50,22 @@ export function initAgeGatePage(): void {
 
     const pageNum = Number.isNaN(currentPage) || currentPage < 1 ? 1 : currentPage;
     const isDobStep = pageNum === 1;
+    const isPrizeStep = !isDobStep && isPrizePage(formId, pageNum);
+    const isContactStep = !isDobStep && !isPrizeStep;
 
     dobTitle.classList.toggle('u-hidden', !isDobStep);
-    contactTitle.classList.toggle('u-hidden', isDobStep);
-    contactLogo?.classList.toggle('u-hidden', isDobStep);
+    contactTitle.classList.toggle('u-hidden', !isContactStep);
+    contactLogo?.classList.toggle('u-hidden', !isContactStep);
+    prizeTitle?.classList.toggle('u-hidden', !isPrizeStep);
+    prizeStripe?.classList.toggle('u-hidden', !isPrizeStep);
     headlineWrap.classList.toggle('u-hidden', !isDobStep);
     termsLink?.classList.toggle('u-hidden', isDobStep);
 
     formWrap.classList.toggle('is-step-dob', isDobStep);
+    // The prize step reuses the contact step's layout (centred, its own bg,
+    // scrolls if needed) and adds `is-step-prize` for its own pieces.
     formWrap.classList.toggle('is-step-contact', !isDobStep);
+    formWrap.classList.toggle('is-step-prize', isPrizeStep);
   };
 
   const stripGfHash = (): void => {

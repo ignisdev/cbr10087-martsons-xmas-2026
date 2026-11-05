@@ -29,7 +29,7 @@ get_header();
 
 		<div class="upload-container page-photo__upload-container">
 
-			<h2 class="upload-container__title page-photo__title">UPLOAD A PHOTO<br/>OF YOUR PEPSI MAX</h2>
+			<h2 class="upload-container__title page-photo__title">UPLOAD A PHOTO<br/>OF YOUR DRINK</h2>
 
 			<div class="upload-container__camera page-photo__camera" data-js="photo-trigger" role="button" aria-label="Take or select a photo" tabindex="0">
 				<?php if ( $ctx['camera_image_url'] !== '' ) : ?>

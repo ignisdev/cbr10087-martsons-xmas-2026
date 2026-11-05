@@ -134,3 +134,8 @@
 	--pf-control-height: 50px;
 	--pf-control-font-size: 20px;
 }
+
+// Same width as the age gate's docked NEXT / SUBMIT.
+.page-photo .pf-cta-dock .page-photo__upload-btn {
+	width: var(--pf-cta-w) !important;
+}

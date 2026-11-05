@@ -339,7 +339,13 @@
    fills the viewport; if the form is taller it grows and the page scrolls. */
 .page-age-gate__scene:has(.page-age-gate__form.is-step-contact) {
 	aspect-ratio: auto;
-	min-height: 100dvh;
+	// Full page width, not the DOB stage's height-limited width — the form
+	// keeps its own 310px cap, and the first/last name fields need the room
+	// to sit side by side.
+	width: var(--ag-bw);
+	// The space between the site header and footer — not 100dvh, which added
+	// the header/footer/CTA reserve on top and made these steps scroll.
+	min-height: var(--pf-content-h);
 	margin-top: 0;
 	padding-top: 0;
 }
@@ -497,3 +503,77 @@
 	border-radius: 50px!important;
 	margin: 0!important;
 } 
+/* ─── Prize-pool step (GF page with the `pf-prize-pool` HTML block) ──────────
+   Reuses the contact-step layout (.is-step-contact is also set) and adds:
+   PRIZE POOL graphic above the copy, Stripe logo below it, and the NEXT
+   button docked above the footer like every other page's CTA
+   (see .pf-cta-dock in base/_layout.scss). Copy + its classes live in the
+   GF HTML block, so they're editable in the form editor. */
+
+.page-age-gate__prize-title,
+.page-age-gate__prize-stripe {
+	display: block;
+	height: auto;
+	margin-inline: auto;
+
+	&.u-hidden {
+		display: none;
+	}
+}
+
+.page-age-gate__prize-title {
+	width: min(86%, 340px);
+	margin-bottom: clamp(16px, 3.5vh, 32px);
+}
+
+.page-age-gate__prize-stripe {
+	width: 110px;
+	margin-top: clamp(14px, 3vh, 28px);
+}
+
+.page-age-gate__form.is-step-prize .pf-prize-pool {
+	margin: 0 !important;
+	text-align: center;
+
+	p {
+		margin: 0 0 14px;
+		text-transform: uppercase;
+	}
+
+	p:last-child {
+		margin-bottom: 0;
+	}
+}
+
+// NEXT (prize step) and SUBMIT (name/email step) sit in the same spot as
+// every other page's CTA. .is-step-contact is set on both steps.
+.page-age-gate__form.is-step-contact .gform_page_footer {
+	position: fixed;
+	left: 50%;
+	bottom: calc(var(--pf-footer-h) + var(--pf-cta-gap));
+	width: var(--pf-page-w);
+	transform: translateX(-50%);
+	display: flex !important;
+	justify-content: center;
+	margin: 0 !important;
+	padding: 0 !important;
+	z-index: 30;
+}
+
+// Both docked buttons share one width: the old 98px pill + 20%.
+.page-age-gate__form.is-step-contact {
+	--ag-cta-w: var(--pf-cta-w);
+}
+
+.page-age-gate__form.is-step-contact .gform_page_footer .gform_next_button,
+.page-age-gate__form.is-step-contact .gform_page_footer input.gform_button,
+.page-age-gate__form.is-step-contact .gform_page_footer button.gform_button {
+	width: var(--ag-cta-w) !important;
+	min-width: var(--ag-cta-w) !important;
+	max-width: var(--ag-cta-w) !important;
+	padding: 0 !important;
+}
+
+.page-age-gate__form.is-step-prize .gform_previous_button {
+	display: none !important;
+}

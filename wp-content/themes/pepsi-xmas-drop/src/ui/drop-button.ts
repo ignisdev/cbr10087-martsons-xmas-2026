@@ -1,8 +1,8 @@
 import gsap from 'gsap';
 
-// Press animation for the drop-button image (pepsi_logo_button.png).
+// Press animation for the drop-button image (marstons/drop_button.png).
 //
-// The artwork is a flat PNG, so on press the whole logo dips and springs back.
+// The artwork is a flat PNG, so on press the whole image dips and springs back.
 
 export interface DropRipple {
 	play: () => void;
