@@ -473,7 +473,10 @@ body.page-template-page-thanks-php {
 	pointer-events: none;
 }
 
-#input_3_3_raw, #input_2_3_raw  {
+// Phone input beside the country-flag dropdown (GF international phone).
+// Matched by field type, not id — the claim form is #3 locally but #2 on
+// staging/production, so `#input_N_3_raw` selectors drift between envs.
+.congrats-form .gfield--type-phone input[id$="_raw"] {
 	padding-left: 52px !important;
 }
 
