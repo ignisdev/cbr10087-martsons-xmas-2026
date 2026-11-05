@@ -15,6 +15,14 @@ if ( function_exists( 'pf_site_chrome_enabled' ) && pf_site_chrome_enabled() ) :
 		<?php endif; ?>
 	</footer>
 <?php endif; ?>
+<?php // Portrait only — shown by CSS when a phone is held sideways (components/_rotate.scss). ?>
+<div class="pf-rotate" role="alert" aria-live="polite">
+	<svg class="pf-rotate__icon" viewBox="0 0 40 64" aria-hidden="true" focusable="false">
+		<rect x="2" y="2" width="36" height="60" rx="6" fill="none" stroke="currentColor" stroke-width="4"/>
+		<circle cx="20" cy="54" r="3" fill="currentColor"/>
+	</svg>
+	<p class="pf-rotate__text"><span class="pf-gold-text">Please rotate your phone</span></p>
+</div>
 </div><!-- /.site-wrapper -->
 <?php wp_footer(); ?>
 </body>

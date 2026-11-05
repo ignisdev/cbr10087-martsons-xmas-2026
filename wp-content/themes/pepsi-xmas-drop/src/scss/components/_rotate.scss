@@ -1,0 +1,58 @@
+/* ─── Portrait only: "rotate your phone" overlay ──────────────────────────────
+   Browsers can't lock orientation (Screen Orientation lock needs fullscreen /
+   an installed app; iOS Safari has none), so a phone held sideways gets this
+   full-screen cover instead. Markup is in footer.php (every page, incl. /game/).
+   Only touch phones in landscape — max-height keeps tablets and desktops out. */
+
+.pf-rotate {
+	display: none;
+}
+
+@media (orientation: landscape) and (max-height: 500px) and (pointer: coarse) {
+	.pf-rotate {
+		position: fixed;
+		inset: 0;
+		z-index: 100000; // above the site chrome, docked CTAs, modals and the game
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 18px;
+		padding: 24px;
+		background: radial-gradient(ellipse at 50% 40%, #0b1a4a 0%, #050b24 55%, #000 100%);
+		text-align: center;
+		touch-action: none; // swallow taps/scrolls so nothing underneath reacts
+	}
+
+	.pf-rotate__icon {
+		width: 64px;
+		height: auto;
+		color: #e9ba55;
+		animation: pf-rotate-hint 2.4s ease-in-out infinite;
+	}
+
+	.pf-rotate__text {
+		margin: 0;
+		font-family: 'PepsiOwners-Compressed', sans-serif;
+		font-size: 34px;
+		line-height: 1;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+
+	// Stop the page behind scrolling while covered.
+	html:has(.pf-rotate) {
+		overflow: hidden;
+	}
+}
+
+@keyframes pf-rotate-hint {
+	0%, 20% { transform: rotate(-90deg); }
+	50%, 100% { transform: rotate(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.pf-rotate__icon {
+		animation: none;
+	}
+}
