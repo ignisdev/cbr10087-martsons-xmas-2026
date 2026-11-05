@@ -54,13 +54,9 @@ $prize_phrase = function_exists( 'pf_format_prize_with_article' )
 
 	<div class="congrats-content page-thanks__content">
 
-		<h1 class="congrats-sorry__heading">THANKS!</h1>
-
-		<?php if ( $prize_phrase !== '' ) : ?>
-			<p class="congrats-sorry__sub">Congratulations on winning <br/><?php echo esc_html( $prize_phrase ); ?>.</p>
-		<?php else : ?>
-			<p class="congrats-sorry__sub">Once again congratulations.</p>
-		<?php endif; ?>
+		<h1 class="congrats-sorry__heading congrats-sorry__heading--graphic">
+			<img src="<?php echo esc_url( get_template_directory_uri() . '/src/images/marstons/thanks.png' ); ?>" alt="Thanks!" />
+		</h1>
 
 		<?php if ( $is_cash ) : ?>
 		<p class="congrats-sorry__sub">YOUR PRIZE SHOULD BE WITH YOU WITHIN THE NEXT 24-48 HOURS.</p>
@@ -70,8 +66,6 @@ $prize_phrase = function_exists( 'pf_format_prize_with_article' )
 		<?php else : ?>
 			<p class="congrats-sorry__sub">Your prize will be with you<br/> within 28 days.</p>
 		<?php endif; ?>
-
-		<p class="congrats-sorry__sub">PEPSI MAX.</p>
 
 	</div>
 

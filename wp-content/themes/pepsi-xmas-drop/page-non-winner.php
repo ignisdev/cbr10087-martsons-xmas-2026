@@ -26,16 +26,13 @@ get_header();
 
 	<div class="congrats-content congrats-content-sorry page-non-winner__content">
 
-		<h1 class="congrats-sorry__heading">SO NEAR!</h1>
+		<h1 class="congrats-sorry__heading congrats-sorry__heading--graphic">
+			<img src="<?php echo esc_url( get_template_directory_uri() . '/src/images/marstons/sorry.png' ); ?>" alt="Sorry!" />
+		</h1>
 
-		<p class="congrats-sorry__sub">The tree didn't quite<br/> make it this time.</p>
-
-		<p class="congrats-sorry__sub">Go on, one more drop.<br/> It's Xmas after all.</p>
-
-		<p class="congrats-sorry__sub">You can try up to<br/> 3 times each day.</p>
-
+		<p class="congrats-sorry__sub">you didn't win this time. Buy<br/>another drink to try again. <br/>You can try up to 3 times each day.</p>
 		<div class="pf-cta-dock">
-			<a class="pepsi-pill-button page-non-winner__try-again" href="<?php echo esc_url( home_url( '/' ) ); ?>">Buy another Pepsi</a>
+			<a class="pepsi-pill-button page-non-winner__try-again" href="<?php echo esc_url( home_url( '/' ) ); ?>">Buy another Drink</a>
 		</div>
 
 	</div>

@@ -172,6 +172,20 @@ body.page-template-page-thanks-php {
 	line-height: 1;
 }
 
+// Gold headline graphic in place of the text (thanks.png / sorry.png).
+// Theme files, so they work on every environment without re-linking.
+.congrats-sorry__heading--graphic {
+	margin: 0 auto 1rem;
+	line-height: 0;
+
+	img {
+		display: block;
+		width: min(80%, 340px);
+		height: auto;
+		margin-inline: auto;
+	}
+}
+
 .daily-limit__heading {
 	font-family: 'PepsiOwners-Compressed', sans-serif;
 	font-size: clamp(2rem, 14vw, 3.5rem);
