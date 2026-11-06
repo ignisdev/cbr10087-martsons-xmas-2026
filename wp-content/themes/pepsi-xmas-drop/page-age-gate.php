@@ -123,7 +123,7 @@ $ag_form_classes = $ag_is_dob ? 'is-step-dob' : 'is-step-contact' . ( $ag_is_pri
 		</div>
 
 		<div class="date-of-birth-form page-age-gate__form <?php echo esc_attr( $ag_form_classes ); ?>" data-js="age-gate-form-wrap">
-			<p class="date-of-birth-form__title page-age-gate__title page-age-gate__title--dob<?php echo esc_attr( $ag_hidden( $ag_is_dob ) ); ?>" data-js="age-gate-title-dob">ENTER YOUR DATE OF BIRTH <br/>FOR YOUR CHANCE TO WIN WITH PEPSI</p>
+			<p class="date-of-birth-form__title page-age-gate__title page-age-gate__title--dob<?php echo esc_attr( $ag_hidden( $ag_is_dob ) ); ?>" data-js="age-gate-title-dob">ENTER YOUR DATE OF BIRTH <br/>FOR YOUR CHANCE TO WIN</p>
 			<p class="date-of-birth-form__title page-age-gate__title page-age-gate__title--contact<?php echo esc_attr( $ag_hidden( $ag_is_contact ) ); ?>" data-js="age-gate-title-contact">ENTER YOUR NAME AND EMAIL <br/>  FOR YOUR CHANCE TO WIN</p>
 			<img class="page-age-gate__prize-title<?php echo esc_attr( $ag_hidden( $ag_is_prize ) ); ?>" data-js="age-gate-prize-title" src="<?php echo esc_url( $prize_pool_title_url ); ?>" alt="Prize pool" />
 			<div class="date-of-birth-form__errors" role="alert" aria-live="polite"></div>

@@ -74,8 +74,8 @@ get_header();
 					// Numbered steps: big blue number (col 1, one size for all),
 					// white text (col 2). Each entry is one line of the copy.
 					$how_to_play_steps = [
-						[ 'BUILD THE PEPSI XMAS', 'TREE ACROSS 4 LEVELS', 'LAND THE STAR ON TOP TO WIN.' ],
-						[ 'TAP THE PEPSI BUTTON TO', 'DROP EACH MOVING DECORATION', 'INTO ITS MATCHING SPACE.', 'TIME YOUR TAP CAREFULLY!' ],
+						[ 'BUILD THE MARSTONS XMAS', 'TREE ACROSS 4 LEVELS', 'LAND THE STAR ON TOP TO WIN.' ],
+						[ 'TAP THE MARSTONS BUTTON TO', 'DROP EACH MOVING DECORATION', 'INTO ITS MATCHING SPACE.', 'TIME YOUR TAP CAREFULLY!' ],
 						[ 'EACH LEVEL GETS FASTER. IF A', 'DECORATION DOESN’T LAND IN THE', 'RIGHT SPACE, IT’S GAME OVER.', 'GOOD LUCK!' ],
 					];
 					?>
