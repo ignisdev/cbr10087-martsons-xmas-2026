@@ -28,20 +28,24 @@ OUT_TS  = THEME / 'src/renderer/bauble-outlines.ts'
 # type → source file: the 9 drop pieces (types served by drop-engine.php)
 # plus the 4 decorative light strands (DECOR in src/renderer/baubles.ts)
 PIECES = {
-    'cracker':   '1. Cracker.png',
-    'present':   '4. Present.png',
-    'bauble':    '2. Bauble.png',
-    'mouth':     '7. Mouth.png',
-    'heart':     '8. Heart.png',
+    'cracker':   'updated_baubles/1. Cracker.png',
+    'present':   'updated_baubles/4. Present V2.png',
+    'bauble':    'updated_baubles/2. Bauble.png',
+    'mouth':     'updated_baubles/7. Mouth.png',
+    'heart':     'updated_baubles/8. Heart.png',
     'snowman':   '6. Snowman.png',
     'snowglobe': '10. Snowglobe.png',
-    'gift':      '11. Present.png',
+    'gift':      'updated_baubles/11. Present.png',
     'star':      '13. StarTopper.png',
-    'lights1':   '3. Lights.png',
-    'lights2':   '5. Lights2.png',
-    'lights3':   '12 Lights3.png',
-    'lights4':   '9. LightsTop.png',
+    'lights1':   'updated_baubles/3. Lights.png',
+    'lights2':   'updated_baubles/5. Lights 2.png',
+    'lights3':   'updated_baubles/9. Lights3.png',
+    'lights4':   'updated_baubles/9. Lights3.png',
 }
+
+# Types whose source is flipped left-to-right before building (lights3 is the
+# lights4 strand mirrored, as in the original artwork).
+MIRROR = {'lights3'}
 
 SPRITE_SCALE = 0.3   # shipped sprite size ÷ source size (same for every piece)
 MASK_MAX    = 400    # longest side of the tracing mask, px
@@ -146,6 +150,8 @@ def main():
     entries = []
     for kind, filename in PIECES.items():
         img = Image.open(SRC / filename).convert('RGBA')
+        if kind in MIRROR:
+            img = img.transpose(Image.FLIP_LEFT_RIGHT)
 
         sprite = img.resize((round(img.width * SPRITE_SCALE), round(img.height * SPRITE_SCALE)), Image.LANCZOS)
         sprite.save(WEB / f'{kind}.webp', 'WEBP', quality=88, method=6)
