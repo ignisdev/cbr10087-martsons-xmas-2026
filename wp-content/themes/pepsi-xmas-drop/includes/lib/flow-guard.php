@@ -439,6 +439,18 @@ function pf_flow_can_access_template( string $template ): bool {
 		return true;
 	}
 
+	// Claim already submitted this journey → no Back-button replay of the
+	// claim form. Outcome is set to winner_cash / winner_merch by the claim
+	// form's after_submission hook. GET only: the claim form POSTs to this
+	// same URL and its confirmation redirect must still run after the
+	// outcome is set. pf_flow_reset() (age-gate) clears the outcome.
+	if ( $template === 'page-congratulations.php'
+		&& strtoupper( (string) ( $_SERVER['REQUEST_METHOD'] ?? 'GET' ) ) === 'GET'
+		&& in_array( pf_flow_outcome(), [ PF_FLOW_OUTCOME_WINNER_CASH, PF_FLOW_OUTCOME_WINNER_MERCH ], true ) ) {
+		error_log( 'PF FLOW guard: /congratulations/ denied — prize already claimed this session; bouncing to age-gate.' );
+		return false;
+	}
+
 	$prev = pf_flow_previous_step( $step );
 	if ( $prev === '' ) {
 		return true; // first step in the BPM flow — open access
@@ -694,8 +706,51 @@ add_action( 'init', function () {
 	if ( $static_claim_id > 0 ) {
 		$claim_form_ids[] = $static_claim_id;
 	}
+	// Reject a claim submission whose completion token is missing, expired or
+	// already consumed — e.g. a bfcache-restored or second-tab copy of the
+	// form re-submitted after the prize was claimed. Without this GF still
+	// saves a (prize-less) duplicate entry. Peek only: the token is consumed
+	// later in gform_pre_submission (scores.php).
+	$claim_validator = function ( $result ) {
+		$form = $result['form'];
+		if ( function_exists( 'pf_is_forced_cash_test_allowed' ) && pf_is_forced_cash_test_allowed()
+			&& function_exists( 'pf_get_forced_cash_entry_id' ) && pf_get_forced_cash_entry_id() > 0 ) {
+			return $result; // forced-cash debug path arms its own claim
+		}
+
+		$token = '';
+		foreach ( (array) ( $form['fields'] ?? [] ) as $field ) {
+			if ( strtolower( trim( (string) ( $field->inputName ?? '' ) ) ) === 'score' ) {
+				$token = sanitize_text_field( (string) ( $_POST[ 'input_' . (int) $field->id ] ?? '' ) );
+				break;
+			}
+		}
+		if ( $token === '' ) {
+			pf_flow_ensure_session();
+			$token = sanitize_text_field( (string) ( $_SESSION['pf_completion_token'] ?? '' ) );
+		}
+
+		$data = ( $token !== '' && function_exists( 'pf_peek_completion_token' ) ) ? pf_peek_completion_token( $token ) : null;
+		if ( is_array( $data ) && empty( $data['used'] ) ) {
+			return $result;
+		}
+
+		error_log( sprintf(
+			'PF FLOW claim validation: rejected — completion token %s.',
+			$token === '' ? 'missing' : ( is_array( $data ) ? 'already used' : 'invalid/expired' )
+		) );
+		$result['is_valid'] = false;
+		add_filter( 'gform_validation_message_' . (int) $form['id'], static function () {
+			return '<div class="gform_validation_errors"><h2 class="gform_submission_error">'
+				. esc_html__( 'This prize has already been claimed.', 'pepsi-xmas-drop' )
+				. '</h2></div>';
+		} );
+		return $result;
+	};
+
 	foreach ( array_unique( $claim_form_ids ) as $cid ) {
 		add_action( "gform_after_submission_{$cid}", $claim_handler, 5, 2 );
+		add_filter( "gform_validation_{$cid}", $claim_validator, 20 );
 	}
 } );
 

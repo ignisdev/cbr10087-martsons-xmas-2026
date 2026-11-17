@@ -23,6 +23,9 @@ $failed_url     = function_exists( 'pf_prize_page_url' )
 	? pf_prize_page_url( 'payout-failed', $claim_token !== '' ? [ 'pf_claim' => $claim_token ] : [] )
 	: home_url( '/payout-failed/' );
 $status_url     = rest_url( 'pepsi-xmas/v1/payout-status' ) . '?pf_claim=' . rawurlencode( $claim_token );
+// pf_wait=1: bank details already entered, payout deferred (bank account still
+// attaching / CoP pending) — skip the "enter bank details" step and just poll.
+$pf_wait        = isset( $_GET['pf_wait'] ) && (string) $_GET['pf_wait'] === '1';
 
 // If no valid claim, bail straight to payout-failed — unless admin is previewing.
 if ( $claim_token === '' || ! is_array( $context ) ) {
@@ -52,7 +55,7 @@ get_header();
 
 		<h1 class="congrats-sorry__heading">ALMOST THERE!</h1>
 
-		<div id="pf-step-enter" <?php echo $stripe_url === '' ? 'style="display:none"' : ''; ?>>
+		<div id="pf-step-enter" <?php echo ( $stripe_url === '' || $pf_wait ) ? 'style="display:none"' : ''; ?>>
 			<p class="congrats-sorry__sub">
 				TAP BELOW TO ENTER YOUR BANK DETAILS.<br>
 				ONCE YOU'RE DONE WE'LL CONFIRM YOUR PAYMENT AUTOMATICALLY.
@@ -85,6 +88,7 @@ get_header();
 	var statusUrl   = <?php echo wp_json_encode( $status_url ); ?>;
 	var prizePaidUrl = <?php echo wp_json_encode( $prize_paid_url ); ?>;
 	var failedUrl   = <?php echo wp_json_encode( $failed_url ); ?>;
+	var waitOnly    = <?php echo $pf_wait ? 'true' : 'false'; ?>;
 
 	var stepEnter  = document.getElementById('pf-step-enter');
 	var stepWait   = document.getElementById('pf-step-waiting');
@@ -139,7 +143,7 @@ get_header();
 		if (stepEnter) stepEnter.style.display = 'none';
 		if (stepWait)  stepWait.style.display  = '';
 		// Show reopen link after 20 s in case they closed the Stripe tab.
-		if (reopenEl) {
+		if (reopenEl && !waitOnly) {
 			setTimeout(function () {
 				if (!done) reopenEl.style.display = '';
 			}, REOPEN_AFTER_MS);
@@ -147,8 +151,13 @@ get_header();
 		pollTimer = setTimeout(poll, POLL_INTERVAL_MS);
 	}
 
-	// Button click opens Stripe in a new tab (user gesture = never blocked).
-	if (openBtn && stripeUrl) {
+	// Payout deferred after onboarding — nothing to enter, just poll. The
+	// retry cron runs every 10 min, so allow ~15 min of polling here.
+	if (waitOnly) {
+		MAX_POLLS = 225;
+		startPolling();
+	} else if (openBtn && stripeUrl) {
+		// Button click opens Stripe in a new tab (user gesture = never blocked).
 		openBtn.addEventListener('click', function () {
 			stripeTab = window.open(stripeUrl, '_blank');
 			startPolling();

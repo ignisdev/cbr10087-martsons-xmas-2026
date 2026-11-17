@@ -78,16 +78,53 @@ function pf_get_payout_method(): string {
 }
 
 /**
- * Cash prize tiers. The Xmas Drop has two cash tiers (20 × £250, 500 × £10)
- * and the BPM prize table has no amount column, so the tier is encoded in the
- * slot's prize_type (`cash_250`, `cash_10`) and resolved to pence here. Plain
- * `cash` falls back to STRIPE_PRIZE_AMOUNT_PENCE for legacy schedules.
+ * Cash prize tiers. The Marston's Xmas Drop has two cash tiers (20 × £250,
+ * 750 × £10 "free pint") and the BPM prize table has no amount column, so the
+ * tier is encoded in the slot's prize_type (`cash_250`, `cash_10`) and
+ * resolved to pence here. Plain `cash` falls back to STRIPE_PRIZE_AMOUNT_PENCE
+ * for legacy schedules.
  */
 function pf_prize_amount_map(): array {
 	return (array) apply_filters( 'pf_prize_amount_map', [
 		'cash_250' => 25000,
 		'cash_10'  => 1000,
 	] );
+}
+
+/**
+ * Winner-facing wording for tiers that aren't shown as a cash amount. The
+ * £10 tier is paid in cash but presented as a free pint. Unlisted tiers fall
+ * back to the paid amount (see pf_prize_display_phrase()).
+ */
+function pf_prize_display_map(): array {
+	return (array) apply_filters( 'pf_prize_display_map', [
+		'cash_10' => 'a free pint',
+	] );
+}
+
+/**
+ * What the winner is told they've won, ready to drop into "You've won …":
+ *   1. a display_map phrase for the tier ("a free pint"),
+ *   2. else the amount Stripe pays for a cash tier ("£250") — same lookup as
+ *      the payout, so the page can never show a different figure,
+ *   3. else the BPM prize name with an article, else "a prize". Never "£0".
+ */
+function pf_prize_display_phrase( string $prize_type, string $prize_name = '' ): string {
+	$t   = strtolower( trim( $prize_type ) );
+	$map = pf_prize_display_map();
+	if ( isset( $map[ $t ] ) && trim( (string) $map[ $t ] ) !== '' ) {
+		return trim( (string) $map[ $t ] );
+	}
+	if ( pf_is_cash_prize_type( $t ) ) {
+		$pence = pf_prize_amount_pence_for_type( $t );
+		if ( $pence > 0 ) {
+			return '£' . ( $pence % 100 === 0 ? number_format( $pence / 100 ) : number_format( $pence / 100, 2 ) );
+		}
+	}
+	$phrase = function_exists( 'pf_format_prize_with_article' )
+		? pf_format_prize_with_article( $prize_name )
+		: trim( $prize_name );
+	return $phrase !== '' ? $phrase : 'a prize';
 }
 
 /** Is this prize_type a Stripe-paid cash prize (`cash` or any `cash_*` tier)? */
@@ -156,7 +193,7 @@ function pf_get_payout_descriptor(): string {
 function pf_stripe_v2_request( string $method, string $path, array $body = [], array $extra_headers = [], string $key_override = '' ): array {
 	$url     = 'https://api.stripe.com/v2' . $path;
 	$key     = $key_override !== '' ? $key_override : pf_stripe_secret_key();
-	$version = defined( 'STRIPE_API_VERSION' ) ? (string) STRIPE_API_VERSION : '2026-10-07.preview';
+	$version = defined( 'STRIPE_API_VERSION' ) ? (string) STRIPE_API_VERSION : '2026-10-28.endive';
 	if ( $key === '' ) {
 		return [ 'ok' => false, 'status' => 0, 'data' => [], 'error' => [ 'message' => 'Stripe secret key not configured.' ] ];
 	}
@@ -1473,6 +1510,73 @@ function pf_api_stripe_v2_backfill_bank_identity( WP_REST_Request $req ): WP_RES
 	return new WP_REST_Response( $out, empty( $out['ok'] ) ? 500 : 200 );
 }
 
+/**
+ * Find a usable gbba_ id for a recipient by listing its bank accounts, scoped
+ * via Stripe-Context. Tries the vault list first, then payout_methods. Picks
+ * the most recently created non-archived account. Returns '' if none found.
+ */
+function pf_v2_find_recipient_gbba( string $account_id ): string {
+	if ( $account_id === '' ) {
+		return '';
+	}
+	$ctx = [ 'Stripe-Context' => $account_id ];
+
+	$pick_newest = static function ( array $candidates ): string {
+		usort( $candidates, static fn( $a, $b ) => strcmp( (string) $b['created'], (string) $a['created'] ) );
+		return $candidates[0]['id'] ?? '';
+	};
+
+	// 1) GET /v2/core/vault/gb_bank_accounts
+	$vault = pf_stripe_v2_get( '/core/vault/gb_bank_accounts', [ 'limit' => 10 ], $ctx );
+	if ( $vault['ok'] ) {
+		$candidates = [];
+		foreach ( (array) ( $vault['data']['data'] ?? [] ) as $ba ) {
+			$id = (string) ( $ba['id'] ?? '' );
+			// `restricted` (2026-08-26.preview+) = can't be used for money movement.
+			if ( str_starts_with( $id, 'gbba_' ) && empty( $ba['archived'] ) && empty( $ba['restricted'] ) ) {
+				$candidates[] = [ 'id' => $id, 'created' => (string) ( $ba['created'] ?? '' ) ];
+			}
+		}
+		if ( $candidates ) {
+			$id = $pick_newest( $candidates );
+			error_log( sprintf( 'PF FLOW stripe_v2: gbba resolved via vault list account=%s gbba=%s', $account_id, $id ) );
+			return $id;
+		}
+	}
+
+	// 2) GET /v2/money_management/payout_methods
+	$pms = pf_stripe_v2_get( '/money_management/payout_methods', [ 'limit' => 10 ], $ctx );
+	if ( $pms['ok'] ) {
+		$candidates = [];
+		foreach ( (array) ( $pms['data']['data'] ?? [] ) as $pm ) {
+			$id = (string) ( $pm['id'] ?? '' );
+			// 2026-09-30.preview moved `archived` to the top level and added
+			// usage_status `ineligible` (archived or restricted). Check both
+			// locations so this works either side of that change.
+			$archived   = ! empty( $pm['archived'] ) || ! empty( $pm['bank_account']['archived'] );
+			$ineligible = ( $pm['usage_status']['payments'] ?? '' ) === 'ineligible';
+			if ( ( $pm['type'] ?? '' ) === 'bank_account'
+				&& str_starts_with( $id, 'gbba_' )
+				&& ! $archived && ! $ineligible ) {
+				$candidates[] = [ 'id' => $id, 'created' => (string) ( $pm['created'] ?? '' ) ];
+			}
+		}
+		if ( $candidates ) {
+			$id = $pick_newest( $candidates );
+			error_log( sprintf( 'PF FLOW stripe_v2: gbba resolved via payout_methods list account=%s gbba=%s', $account_id, $id ) );
+			return $id;
+		}
+	}
+
+	error_log( sprintf(
+		'PF FLOW stripe_v2: no gbba found via list endpoints account=%s vault=%s payout_methods=%s',
+		$account_id,
+		substr( wp_json_encode( $vault['ok'] ? $vault['data'] : $vault['error'] ), 0, 500 ),
+		substr( wp_json_encode( $pms['ok'] ? $pms['data'] : $pms['error'] ), 0, 500 )
+	) );
+	return '';
+}
+
 function pf_v2_discover_gb_bank_account( string $account_id ): array {
 	$out = [
 		'gbba_id'    => '',
@@ -1488,7 +1592,7 @@ function pf_v2_discover_gb_bank_account( string $account_id ): array {
 	// on a v2 recipient. Tries account include first; if not present, falls
 	// back to a list endpoint.
 	$acct = pf_stripe_v2_get( '/core/accounts/' . rawurlencode( $account_id ), [
-		'include' => [ 'configuration.recipient', 'requirements', 'identity' ],
+		'include' => [ 'configuration.recipient', 'requirements', 'identity', 'defaults' ],
 	] );
 	$out['raw'] = $acct['data'];
 	if ( ! $acct['ok'] ) {
@@ -1497,11 +1601,20 @@ function pf_v2_discover_gb_bank_account( string $account_id ): array {
 
 	$recipient = $acct['data']['configuration']['recipient'] ?? [];
 
-	// Primary source: configuration.recipient.default_outbound_destination is
-	// an object `{ id: "gbba_…", type: "gb_bank_account" }` populated by Stripe
-	// the moment the hosted onboarding form completes successfully.
+	// Primary source (2026-08-26.preview+): defaults.payout_methods is a
+	// per-currency map { "gbp": "gbba_…" }. Stripe moved the default here from
+	// configuration.recipient.default_outbound_destination, which now stays
+	// null — the cause of prize_entry 201 not paying on 2026-11-10.
+	$default_pms = (array) ( $acct['data']['defaults']['payout_methods'] ?? [] );
+	$gbp_default = (string) ( $default_pms['gbp'] ?? '' );
+	if ( str_starts_with( $gbp_default, 'gbba_' ) ) {
+		$out['gbba_id'] = $gbp_default;
+	}
+
+	// Legacy source (pre-2026-08-26.preview): an object
+	// `{ id: "gbba_…", type: "gb_bank_account" }`.
 	$dod = $recipient['default_outbound_destination'] ?? null;
-	if ( is_array( $dod ) ) {
+	if ( $out['gbba_id'] === '' && is_array( $dod ) ) {
 		$candidate = (string) ( $dod['id'] ?? '' );
 		if ( $candidate !== '' && str_starts_with( $candidate, 'gbba_' ) ) {
 			$out['gbba_id'] = $candidate;
@@ -1522,6 +1635,14 @@ function pf_v2_discover_gb_bank_account( string $account_id ): array {
 				break;
 			}
 		}
+	}
+
+	// Fallback: Stripe doesn't always set default_outbound_destination after
+	// hosted onboarding even though a bank account was entered (seen live on
+	// 2026-11-10: capability active, requirements empty, destination null).
+	// List the recipient's vaulted GB bank accounts directly.
+	if ( $out['gbba_id'] === '' ) {
+		$out['gbba_id'] = pf_v2_find_recipient_gbba( $account_id );
 	}
 
 	// CoP result: retrieve the specific gbba via the vault endpoint with the
@@ -1567,7 +1688,8 @@ function pf_v2_discover_gb_bank_account( string $account_id ): array {
  */
 function pf_v2_cop_result_is_payable( string $result, bool $livemode = true ): bool {
 	$r = strtolower( trim( $result ) );
-	if ( $r === 'match' || $r === 'partial_match' ) {
+	// close_match is Endive's RecipientVerification name for partial_match.
+	if ( $r === 'match' || $r === 'partial_match' || $r === 'close_match' ) {
 		return true;
 	}
 	if ( ! $livemode ) {
@@ -1595,6 +1717,36 @@ function pf_v2_cop_result_is_payable( string $result, bool $livemode = true ): b
 function pf_v2_should_acknowledge_cop( string $result ): bool {
 	$r = strtolower( trim( $result ) );
 	return $r !== 'match';
+}
+
+/**
+ * v2 money_management call. Tries the payouts key (rk_live — Stripe forces a
+ * restricted key on outbound_payments) and falls back to the platform secret
+ * key if the restricted key lacks permission for this endpoint.
+ */
+function pf_v2_money_management_request( string $method, string $path, array $body = [] ): array {
+	$payouts_key = pf_stripe_payouts_key();
+	$res         = pf_stripe_v2_request( $method, $path, $body, [], $payouts_key );
+	if ( ! $res['ok'] && in_array( (int) $res['status'], [ 401, 403 ], true ) && $payouts_key !== pf_stripe_secret_key() ) {
+		$res = pf_stripe_v2_request( $method, $path, $body );
+	}
+	return $res;
+}
+
+/**
+ * POST /v2/money_management/recipient_verifications — runs Confirmation of
+ * Payee for a GB bank payout method (2026-10-28.endive+). Response carries
+ * match_result (match / close_match / no_match / unavailable) and status
+ * (verified / awaiting_acknowledgement / …).
+ */
+function pf_v2_create_recipient_verification( string $account_id, string $payout_method_id ): array {
+	if ( $account_id === '' || $payout_method_id === '' ) {
+		return [ 'ok' => false, 'status' => 0, 'data' => [], 'error' => [ 'message' => 'account_id or payout_method empty.' ] ];
+	}
+	return pf_v2_money_management_request( 'POST', '/money_management/recipient_verifications', [
+		'recipient'     => $account_id,
+		'payout_method' => $payout_method_id,
+	] );
 }
 
 /**
@@ -1992,12 +2144,44 @@ function pf_v2_execute_payout(
 
 	if ( $gbba_id === '' ) {
 		error_log( 'PF FLOW stripe_v2 execute_payout: could not resolve gbba_ for account=' . $account_id . ' raw=' . wp_json_encode( $gbba['raw'] ) );
+		pf_log_stripe_event(
+			$competition_id,
+			'stripe_v2_no_bank_account',
+			'No bank account (gbba_) found on v2 recipient; payout not sent. Status left pending for retry.',
+			'warning',
+			[ 'prize_entry_id' => $prize_entry_id, 'stripe_account_id_v2' => $account_id ]
+		);
 		// Reset status so a future retry via webhook or refresh is possible.
 		$wpdb->query( $wpdb->prepare(
 			"UPDATE {$table} SET stripe_payout_status = 'pending' WHERE id = %d AND stripe_payout_status = 'processing'",
 			$prize_entry_id
 		) );
 		return [ 'status' => 'no_gbba', 'obp_id' => '' ];
+	}
+
+	// CoP via Recipient Verification (2026-10-28.endive+). On Endive the vault
+	// gbba carries no confirmation_of_payee and no holder name, so the name
+	// check is an explicit RecipientVerification whose id is then passed on
+	// the OutboundPayment. Created before the blocklist so the holder name the
+	// winner entered (provided_name) can feed the name blocklist / dedupe.
+	$recver_id     = '';
+	$recver_status = '';
+	$rv            = pf_v2_create_recipient_verification( $account_id, $gbba_id );
+	if ( $rv['ok'] ) {
+		$recver_id        = (string) ( $rv['data']['id'] ?? '' );
+		$recver_status    = (string) ( $rv['data']['status'] ?? '' );
+		$cop_match_result = (string) ( $rv['data']['match_result'] ?? '' );
+		// Pre-Endive versions already supplied a holder name from the vault.
+		if ( (string) ( $bank_identity['holder_name'] ?? '' ) === '' ) {
+			$details = (array) ( $rv['data']['match_result_details'] ?? [] );
+			$bank_identity['holder_name'] = sanitize_text_field( (string) ( $details['provided_name'] ?? $details['matched_name'] ?? '' ) );
+			$identity_fields['stripe_bank_holder_name'] = $bank_identity['holder_name'];
+		}
+	} else {
+		error_log( sprintf(
+			'PF FLOW stripe_v2 execute_payout: recipient_verification create failed gbba=%s :: %s',
+			$gbba_id, wp_json_encode( $rv['error'] )
+		) );
 	}
 
 	// Payout gate: manual blocklist (Stripe-side holder name / claim email) +
@@ -2034,8 +2218,30 @@ function pf_v2_execute_payout(
 		return [ 'status' => 'blocked', 'obp_id' => '' ];
 	}
 
-	// CoP policy: OPTION A STRICT — match/partial_match pay, anything else
-	// withheld. Test mode relaxes; see pf_v2_cop_result_is_payable.
+	// No CoP answer at all (verification call failed and the vault had
+	// nothing) is NOT a mismatch — don't send the winner back to re-enter bank
+	// details. Leave the entry pending so the retry cron tries again.
+	if ( $cop_match_result === '' ) {
+		pf_update_bpm_stripe_fields( $prize_entry_id, array_merge( $identity_fields, [
+			'stripe_gb_bank_account_id' => $gbba_id,
+		] ) );
+		$wpdb->query( $wpdb->prepare(
+			"UPDATE {$table} SET stripe_payout_status = 'pending' WHERE id = %d AND stripe_payout_status = 'processing'",
+			$prize_entry_id
+		) );
+		pf_log_stripe_event(
+			$competition_id,
+			'stripe_v2_cop_undetermined',
+			'Confirmation of Payee result unavailable; payout deferred to retry cron.',
+			'warning',
+			[ 'prize_entry_id' => $prize_entry_id, 'gbba_id' => $gbba_id, 'error' => $rv['ok'] ? null : $rv['error'] ]
+		);
+		return [ 'status' => 'cop_pending', 'obp_id' => '' ];
+	}
+
+	// CoP policy: OPTION A STRICT — match / close_match (partial_match on
+	// pre-Endive versions) pay, anything else withheld. Test mode relaxes;
+	// see pf_v2_cop_result_is_payable.
 	if ( ! pf_v2_cop_result_is_payable( $cop_match_result, $is_livemode ) ) {
 		pf_update_bpm_stripe_fields( $prize_entry_id, array_merge( $identity_fields, [
 			'stripe_gb_bank_account_id' => $gbba_id,
@@ -2053,7 +2259,35 @@ function pf_v2_execute_payout(
 		return [ 'status' => 'cop_blocked', 'obp_id' => '', 'cop_result' => $cop_match_result ];
 	}
 
-	if ( pf_v2_should_acknowledge_cop( $cop_match_result ) ) {
+	if ( $recver_id !== '' ) {
+		// Non-`match` results come back awaiting_acknowledgement; Stripe
+		// refuses the OutboundPayment until they're acknowledged.
+		if ( $recver_status === 'awaiting_acknowledgement' ) {
+			$ack = pf_v2_money_management_request(
+				'POST',
+				'/money_management/recipient_verifications/' . rawurlencode( $recver_id ) . '/acknowledge'
+			);
+			if ( ! $ack['ok'] ) {
+				pf_log_stripe_event(
+					$competition_id,
+					'stripe_v2_cop_ack_failed',
+					'Recipient verification acknowledge failed; cannot proceed to OutboundPayment.',
+					'error',
+					[ 'prize_entry_id' => $prize_entry_id, 'recipient_verification' => $recver_id, 'error' => $ack['error'] ]
+				);
+				$wpdb->query( $wpdb->prepare(
+					"UPDATE {$table} SET stripe_payout_status = 'pending' WHERE id = %d AND stripe_payout_status = 'processing'",
+					$prize_entry_id
+				) );
+				return [ 'status' => 'cop_ack_failed', 'obp_id' => '' ];
+			}
+			error_log( sprintf(
+				'PF FLOW stripe_v2 execute_payout: recipient_verification acknowledged result=%s id=%s',
+				$cop_match_result, $recver_id
+			) );
+		}
+	} elseif ( pf_v2_should_acknowledge_cop( $cop_match_result ) ) {
+		// Pre-Endive path: CoP result came from the vault gbba.
 		$ack = pf_v2_acknowledge_cop( $gbba_id, $account_id );
 		if ( ! $ack['ok'] ) {
 			pf_log_stripe_event(
@@ -2122,6 +2356,9 @@ function pf_v2_execute_payout(
 	$descriptor = pf_get_payout_descriptor();
 	if ( $descriptor !== '' ) {
 		$op_payload['statement_descriptor'] = $descriptor;
+	}
+	if ( $recver_id !== '' ) {
+		$op_payload['recipient_verification'] = $recver_id;
 	}
 	$op_result = pf_stripe_v2_post( '/money_management/outbound_payments', $op_payload, [], pf_stripe_payouts_key() );
 
@@ -2410,6 +2647,12 @@ function pf_v2_process_stripe_return( string $claim_token, array $context ): voi
 		case 'cop_blocked':
 			wp_safe_redirect( pf_prize_page_url( 'payout-failed', [ 'pf_claim' => $claim_token, 'pf_reason' => 'cop_mismatch' ] ) );
 			exit;
+		case 'cop_pending':
+		case 'no_gbba':
+			// Not a failure — Stripe hasn't finished attaching / verifying the
+			// bank account yet. Wait on the polling page; the retry cron pays.
+			wp_safe_redirect( pf_prize_page_url( 'prize-processing', [ 'pf_claim' => $claim_token, 'pf_wait' => '1' ] ) );
+			exit;
 		default:
 			wp_safe_redirect( pf_prize_page_url( 'payout-failed', [ 'pf_claim' => $claim_token ] ) );
 			exit;
@@ -2465,6 +2708,12 @@ function pf_v2_process_stripe_refresh( string $claim_token, array $context ): vo
 				exit;
 			case 'cop_blocked':
 				wp_safe_redirect( pf_prize_page_url( 'payout-failed', [ 'pf_claim' => $claim_token, 'pf_reason' => 'cop_mismatch' ] ) );
+				exit;
+			case 'cop_pending':
+			case 'no_gbba':
+				// Not a failure — Stripe hasn't finished attaching / verifying the
+				// bank account yet. Wait on the polling page; the retry cron pays.
+				wp_safe_redirect( pf_prize_page_url( 'prize-processing', [ 'pf_claim' => $claim_token, 'pf_wait' => '1' ] ) );
 				exit;
 			default:
 				wp_safe_redirect( pf_prize_page_url( 'payout-failed', [ 'pf_claim' => $claim_token ] ) );
@@ -2601,7 +2850,7 @@ function pf_handle_stripe_webhook( WP_REST_Request $req ): WP_REST_Response {
 }
 
 /**
- * Dispatcher for v2-namespaced events (Stripe-Version: 2026-10-07.preview).
+ * Dispatcher for v2-namespaced events (Stripe-Version: STRIPE_API_VERSION).
  * PF_V2_TBD: confirm exact v2 event-type strings in test mode and update the
  * in_array() list below if Stripe uses a different naming convention.
  */
@@ -2689,6 +2938,13 @@ function pf_handle_stripe_v2_webhook( $event, string $event_id, string $type, $o
 				'PF FLOW stripe_v2 webhook: account_link.returned — bank_status=%s not active prize_entry_id=%d; no payout',
 				$bank_status, $prize_entry_id
 			) );
+			pf_log_stripe_event(
+				$competition_id,
+				'stripe_v2_bank_not_active',
+				'Onboarding returned but bank capability not active yet; payout deferred to retry cron.',
+				'warning',
+				[ 'prize_entry_id' => $prize_entry_id, 'stripe_account_id_v2' => $account_id, 'bank_status' => $bank_status ]
+			);
 			return new WP_REST_Response( [ 'received' => true ], 200 );
 		}
 
@@ -2761,4 +3017,99 @@ function pf_handle_stripe_v2_webhook( $event, string $event_id, string $type, $o
 
 	error_log( sprintf( 'PF Stripe v2 webhook: unhandled type=%s', $type ) );
 	return new WP_REST_Response( [ 'received' => true ], 200 );
+}
+
+// ─── v2 payout retry cron ───────────────────────────────────────────────────
+// Safety net for entries that finished onboarding but didn't pay at that
+// moment (bank capability still pending, bank account attached a moment
+// later, transient Stripe error). Every 10 minutes, re-checks v2 entries still
+// in `pending` with no OutboundPayment and pays any whose bank capability is
+// now active. pf_v2_execute_payout() holds the atomic pending→processing lock,
+// so this can't double-pay alongside the webhook or browser return.
+
+const PF_V2_PAYOUT_RETRY_HOOK = 'pf_v2_payout_retry';
+
+add_filter( 'cron_schedules', static function ( $schedules ) {
+	$schedules['pf_ten_minutes'] = [ 'interval' => 600, 'display' => 'Every 10 minutes' ];
+	return $schedules;
+} );
+
+add_action( 'init', static function () {
+	if ( ! wp_next_scheduled( PF_V2_PAYOUT_RETRY_HOOK ) ) {
+		wp_schedule_event( time() + 600, 'pf_ten_minutes', PF_V2_PAYOUT_RETRY_HOOK );
+	}
+} );
+
+add_action( PF_V2_PAYOUT_RETRY_HOOK, static function () {
+	pf_v2_payout_retry_run();
+} );
+
+/**
+ * @return array{checked:int,paid:int,results:array}
+ */
+function pf_v2_payout_retry_run( int $limit = 20 ): array {
+	$out = [ 'checked' => 0, 'paid' => 0, 'results' => [] ];
+	if ( ! (bool) apply_filters( 'pf_v2_payout_retry_enabled', true )
+		|| pf_stripe_financial_account_id() === ''
+		|| ! function_exists( 'pf_bpm_prize_has_column' )
+		|| ! pf_bpm_prize_has_column( 'stripe_account_id_v2' )
+		|| ! pf_bpm_prize_has_column( 'stripe_outbound_payment_id' ) ) {
+		return $out;
+	}
+
+	global $wpdb;
+	$table = $wpdb->prefix . 'bpm_prize_entries';
+	// 30-day window stops abandoned claims being polled for the whole campaign.
+	$rows = $wpdb->get_results( $wpdb->prepare(
+		"SELECT id, stripe_account_id_v2 FROM {$table}
+		 WHERE stripe_account_id_v2 IS NOT NULL AND stripe_account_id_v2 != ''
+		   AND stripe_payout_status = 'pending'
+		   AND ( stripe_outbound_payment_id IS NULL OR stripe_outbound_payment_id = '' )
+		   AND created_at >= DATE_SUB( NOW(), INTERVAL 30 DAY )
+		 ORDER BY id ASC LIMIT %d",
+		$limit
+	), ARRAY_A );
+
+	foreach ( (array) $rows as $row ) {
+		$prize_entry_id = (int) $row['id'];
+		$account_id     = (string) $row['stripe_account_id_v2'];
+		$out['checked']++;
+
+		$acct = pf_stripe_v2_get( '/core/accounts/' . rawurlencode( $account_id ), [
+			'include' => [ 'configuration.recipient' ],
+		] );
+		if ( ! $acct['ok'] ) {
+			$out['results'][ $prize_entry_id ] = 'account_fetch_failed';
+			continue;
+		}
+		$bank_status = strtolower( (string) ( $acct['data']['configuration']['recipient']['capabilities']['bank_accounts']['local']['status'] ?? '' ) );
+		if ( $bank_status !== 'active' ) {
+			// Still onboarding (or abandoned) — check again next run.
+			$out['results'][ $prize_entry_id ] = 'bank_' . ( $bank_status !== '' ? $bank_status : 'unknown' );
+			continue;
+		}
+
+		$meta        = (array) ( $acct['data']['metadata'] ?? [] );
+		$gf_entry_id = (int) ( $meta['gf_entry_id'] ?? 0 );
+		$is_livemode = (bool) ( $acct['data']['livemode'] ?? true );
+
+		$result = pf_v2_execute_payout(
+			$prize_entry_id,
+			$account_id,
+			pf_get_prize_entry_competition_id( $prize_entry_id ),
+			null,
+			$gf_entry_id,
+			$is_livemode
+		);
+		$out['results'][ $prize_entry_id ] = $result['status'];
+		if ( $result['status'] === 'ok' ) {
+			$out['paid']++;
+		}
+		error_log( sprintf(
+			'PF FLOW stripe_v2 retry_cron: prize_entry_id=%d result=%s obp_id=%s',
+			$prize_entry_id, $result['status'], $result['obp_id'] ?? ''
+		) );
+	}
+
+	return $out;
 }

@@ -28,7 +28,7 @@ const PF_PRIZE_ROLLOVER_HOOK = 'pf_prize_schedule_rollover';
 function pf_prize_pool(): array {
 	return (array) apply_filters( 'pf_prize_pool', [
 		'cash_250' => [ 'count' => 20,  'name' => '£250 Cash' ],
-		'cash_10'  => [ 'count' => 500, 'name' => '£10 Cash' ],
+		'cash_10'  => [ 'count' => 750, 'name' => 'Pint (£10 Cash)' ],
 	] );
 }
 
@@ -474,6 +474,109 @@ add_action( 'admin_post_pf_prize_schedule', function () {
 	exit;
 } );
 
+// ─── Restore cash tiers after a BPM CSV import ──────────────────────────────
+// BPM's CSV importer only keeps prize_type `cash` or `merch` — any other value
+// (cash_5, cash_10, cash_250 …) is saved as `merch`, which would route the
+// winner away from Stripe. It does keep the full CSV row in `original_data`,
+// so the tier from the CSV's prize_type column (`prize_type_from_file`) is
+// still there. This copies it back onto prize_type.
+//
+// Only unclaimed rows with no live reservation are touched, and only to a
+// tier pf_prize_amount_map() can pay — an unknown tier is reported, never
+// written, so a typo in the CSV can't create a slot that pays £0.
+
+/**
+ * @return array{ok:bool,dry_run:bool,competition_id:int,changes:array,unpayable:array,skipped_locked:int,updated:int,error?:string}
+ */
+function pf_prize_restore_csv_types( int $competition_id, bool $dry_run = true ): array {
+	global $wpdb;
+	$table = $wpdb->prefix . 'bpm_prize_entries';
+	$out   = [
+		'ok'             => true,
+		'dry_run'        => $dry_run,
+		'competition_id' => $competition_id,
+		'changes'        => [],   // "merch → cash_5" => count
+		'unpayable'      => [],   // csv tier with no amount => count
+		'skipped_locked' => 0,
+		'updated'        => 0,
+	];
+	if ( $competition_id <= 0 ) {
+		return array_merge( $out, [ 'ok' => false, 'error' => 'No competition resolved (set the active competition in BPM).' ] );
+	}
+
+	$now  = current_time( 'mysql' );
+	$rows = (array) $wpdb->get_results( $wpdb->prepare(
+		"SELECT id, prize_type, claimed, reservation_expires_at, original_data
+		 FROM {$table} WHERE competition_id = %d AND original_data IS NOT NULL AND original_data != ''",
+		$competition_id
+	) );
+
+	$updates = []; // csv tier => [ ids ]
+	foreach ( $rows as $row ) {
+		$orig     = json_decode( (string) $row->original_data, true );
+		$csv_type = strtolower( trim( (string) ( is_array( $orig ) ? ( $orig['prize_type_from_file'] ?? $orig['prize_type'] ?? '' ) : '' ) ) );
+		$current  = strtolower( trim( (string) $row->prize_type ) );
+		if ( $csv_type === '' || ! str_starts_with( $csv_type, 'cash_' ) || $csv_type === $current ) {
+			continue;
+		}
+		if ( pf_prize_amount_pence_for_type( $csv_type ) <= 0 ) {
+			$out['unpayable'][ $csv_type ] = ( $out['unpayable'][ $csv_type ] ?? 0 ) + 1;
+			continue;
+		}
+		if ( (int) $row->claimed === 1 || ( (string) $row->reservation_expires_at !== '' && (string) $row->reservation_expires_at >= $now ) ) {
+			$out['skipped_locked']++;
+			continue;
+		}
+		$label                    = $current . ' → ' . $csv_type;
+		$out['changes'][ $label ] = ( $out['changes'][ $label ] ?? 0 ) + 1;
+		$updates[ $csv_type ][]   = (int) $row->id;
+	}
+
+	if ( $dry_run || ! $updates ) {
+		return $out;
+	}
+
+	foreach ( $updates as $csv_type => $ids ) {
+		foreach ( array_chunk( $ids, 200 ) as $chunk ) {
+			$in = implode( ',', array_map( 'intval', $chunk ) );
+			// Re-check claimed / reservation in the UPDATE itself so a slot won
+			// between the read and the write is never retyped.
+			$n = $wpdb->query( $wpdb->prepare(
+				"UPDATE {$table} SET prize_type = %s
+				 WHERE id IN ({$in}) AND claimed = 0
+				   AND ( reservation_expires_at IS NULL OR reservation_expires_at < %s )",
+				$csv_type, $now
+			) );
+			$out['updated'] += max( 0, (int) $n );
+		}
+	}
+
+	if ( class_exists( 'BPM_Audit_Logger' ) ) {
+		BPM_Audit_Logger::log(
+			$competition_id,
+			'pf_prize_csv_types_restored',
+			sprintf( 'Restored %d prize slot type(s) from the CSV import.', $out['updated'] ),
+			'info',
+			[ 'changes' => $out['changes'], 'unpayable' => $out['unpayable'], 'skipped_locked' => $out['skipped_locked'], 'user_id' => get_current_user_id() ]
+		);
+	}
+	return $out;
+}
+
+add_action( 'admin_post_pf_prize_restore_types', function () {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'Insufficient permissions.' ) );
+	}
+	check_admin_referer( 'pf_prize_restore_types' );
+
+	$cid    = function_exists( 'pf_resolve_competition_id' ) ? pf_resolve_competition_id() : 0;
+	$apply  = sanitize_key( (string) ( $_POST['pf_mode'] ?? 'preview' ) ) === 'apply';
+	$report = pf_prize_restore_csv_types( $cid, ! $apply );
+	set_transient( 'pf_prize_restore_report_' . get_current_user_id(), $report, 10 * MINUTE_IN_SECONDS );
+	wp_safe_redirect( admin_url( 'options-general.php?page=pf-debug#pf-prize-restore' ) );
+	exit;
+} );
+
 function pf_prize_schedule_admin_render(): void {
 	$cid     = function_exists( 'pf_resolve_competition_id' ) ? pf_resolve_competition_id() : 0;
 	$dates   = $cid > 0 ? pf_prize_competition_dates( $cid ) : null;
@@ -522,6 +625,56 @@ function pf_prize_schedule_admin_render(): void {
 	<?php else : ?>
 		<p><strong>No prize slots exist for this competition — nobody can win.</strong></p>
 	<?php endif; ?>
+
+	<?php
+	$restore_key    = 'pf_prize_restore_report_' . get_current_user_id();
+	$restore_report = get_transient( $restore_key );
+	delete_transient( $restore_key );
+	?>
+	<h3 id="pf-prize-restore">Fix prize types after a CSV import</h3>
+	<p class="description" style="max-width: 700px;">
+		BPM's importer saves every prize as <code>cash</code> or <code>merch</code>, so <code>cash_5</code> / <code>cash_10</code> /
+		<code>cash_250</code> rows arrive as <code>merch</code> and would never pay through Stripe. Run this after every import:
+		it copies the <code>prize_type</code> column from the CSV back onto each unclaimed slot. Tiers with no payout amount are
+		reported, not written.
+	</p>
+	<?php if ( is_array( $restore_report ) ) : ?>
+		<div class="notice <?php echo ! empty( $restore_report['ok'] ) && empty( $restore_report['unpayable'] ) ? 'notice-info' : 'notice-error'; ?>" style="padding: 8px 12px;">
+			<?php if ( empty( $restore_report['ok'] ) ) : ?>
+				<p><strong>Failed:</strong> <?php echo esc_html( (string) ( $restore_report['error'] ?? 'unknown' ) ); ?></p>
+			<?php else : ?>
+				<p><strong><?php echo ! empty( $restore_report['dry_run'] ) ? 'Preview (nothing written)' : esc_html( sprintf( 'Updated %d slot(s)', (int) $restore_report['updated'] ) ); ?></strong></p>
+				<?php if ( ! $restore_report['changes'] ) : ?>
+					<p>Nothing to fix — every imported slot already has its CSV prize type.</p>
+				<?php else : ?>
+					<p>
+					<?php foreach ( (array) $restore_report['changes'] as $label => $n ) : ?>
+						<code><?php echo esc_html( (string) $label ); ?></code> × <?php echo (int) $n; ?><br>
+					<?php endforeach; ?>
+					</p>
+				<?php endif; ?>
+				<?php if ( (int) $restore_report['skipped_locked'] > 0 ) : ?>
+					<p><?php echo (int) $restore_report['skipped_locked']; ?> claimed / reserved slot(s) left alone.</p>
+				<?php endif; ?>
+				<?php if ( $restore_report['unpayable'] ) : ?>
+					<p><strong>Not written — no payout amount in <code>pf_prize_amount_map()</code>:</strong>
+					<?php foreach ( (array) $restore_report['unpayable'] as $type => $n ) : ?>
+						<code><?php echo esc_html( (string) $type ); ?></code> × <?php echo (int) $n; ?>
+					<?php endforeach; ?>
+					— check the CSV's prize_type column.</p>
+				<?php endif; ?>
+			<?php endif; ?>
+		</div>
+	<?php endif; ?>
+	<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" style="margin-bottom: 2em;">
+		<input type="hidden" name="action" value="pf_prize_restore_types">
+		<?php wp_nonce_field( 'pf_prize_restore_types' ); ?>
+		<p>
+			<button type="submit" class="button" name="pf_mode" value="preview">Preview</button>
+			<button type="submit" class="button button-primary" name="pf_mode" value="apply"
+				onclick="return confirm('Restore the CSV prize types on unclaimed slots now?');">Restore prize types</button>
+		</p>
+	</form>
 
 	<?php if ( is_array( $report ) ) : ?>
 		<div class="notice <?php echo ! empty( $report['ok'] ) ? 'notice-info' : 'notice-error'; ?>" style="padding: 8px 12px;">

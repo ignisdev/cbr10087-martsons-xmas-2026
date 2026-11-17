@@ -33,22 +33,11 @@ pf_page_context( 'winner', [
 
 get_header();
 
-// Headline amount — same lookup Stripe pays from (pf_prize_amount_pence_for_type),
-// so the claim page can never show a different figure to the payout. Unmapped
-// tier (0 pence) or non-cash prize → the prize name, else "A PRIZE"; never £0.
-$prize_amount_label = '';
-if ( function_exists( 'pf_is_cash_prize_type' ) && pf_is_cash_prize_type( $prize_type )
-	&& function_exists( 'pf_prize_amount_pence_for_type' ) ) {
-	$prize_pence = pf_prize_amount_pence_for_type( $prize_type );
-	if ( $prize_pence > 0 ) {
-		$prize_amount_label = '£' . ( $prize_pence % 100 === 0
-			? number_format( $prize_pence / 100 )
-			: number_format( $prize_pence / 100, 2 ) );
-	}
-}
-if ( $prize_amount_label === '' ) {
-	$prize_amount_label = $prize_name !== '' ? $prize_name : 'a prize';
-}
+// Headline prize — "a free pint" for cash_10, else the amount Stripe pays
+// ("£250"), else the prize name. See pf_prize_display_phrase(); never £0.
+$prize_amount_label = function_exists( 'pf_prize_display_phrase' )
+	? pf_prize_display_phrase( $prize_type, $prize_name )
+	: ( $prize_name !== '' ? $prize_name : 'a prize' );
 ?>
 
 <main class="congrats-page page-congrats" data-js="congrats-page">
@@ -56,8 +45,8 @@ if ( $prize_amount_label === '' ) {
 	<div class="congrats-content page-congrats__content">
 		<h1 class="congrats-win">
 			<span class="congrats-win__line pf-gold-text">You’ve won</span>
-			<span class="congrats-win__amount pf-gold-text"><?php echo esc_html( $prize_amount_label ); ?></span>
-			<span class="congrats-win__line pf-gold-text">in our Xmas Drop!</span>
+			<span class="congrats-win__amount<?php echo str_starts_with( $prize_amount_label, '£' ) ? '' : ' congrats-win__amount--phrase'; ?> pf-gold-text"><?php echo esc_html( $prize_amount_label ); ?></span>
+			<span class="congrats-win__line pf-gold-text">in the Marston’s Xmas Drop!</span>
 		</h1>
 
 		<div class="congrats-form page-congrats__form">

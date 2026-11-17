@@ -908,16 +908,20 @@ function pf_dropflow_self_test(): array {
 			&& pf_prize_amount_pence_for_type( 'cash_10' ) === 1000
 			&& pf_prize_amount_pence_for_type( 'cash_999' ) === 0
 			&& pf_is_cash_prize_type( 'cash_250' )
-			&& ! pf_is_cash_prize_type( 'merch' );
+			&& ! pf_is_cash_prize_type( 'merch' )
+			&& pf_prize_display_phrase( 'cash_10' ) === 'a free pint'
+			&& pf_prize_display_phrase( 'cash_250' ) === '£250';
 		$all_pass  = $all_pass && $tier_pass;
 		$results[] = [
-			'name'     => 'Prize tiers: cash_250 → £250, cash_10 → £10, unknown → no payout',
+			'name'     => 'Prize tiers: cash_250 → £250, cash_10 → £10 shown as "a free pint", unknown → no payout',
 			'slot'     => 'n/a',
-			'expected' => '25000 / 1000 / 0',
-			'actual'   => sprintf( '%d / %d / %d',
+			'expected' => '25000 / 1000 / 0 · a free pint / £250',
+			'actual'   => sprintf( '%d / %d / %d · %s / %s',
 				pf_prize_amount_pence_for_type( 'cash_250' ),
 				pf_prize_amount_pence_for_type( 'cash_10' ),
-				pf_prize_amount_pence_for_type( 'cash_999' )
+				pf_prize_amount_pence_for_type( 'cash_999' ),
+				pf_prize_display_phrase( 'cash_10' ),
+				pf_prize_display_phrase( 'cash_250' )
 			),
 			'pass'     => $tier_pass,
 			'reason'   => 'pf_prize_amount_map in stripe-payout.php',

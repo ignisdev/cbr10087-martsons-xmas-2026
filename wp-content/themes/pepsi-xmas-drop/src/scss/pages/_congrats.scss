@@ -135,6 +135,12 @@ body.page-template-page-thanks-php {
 	font-size: clamp(3.5rem, 22vw, 6rem);
 }
 
+// Worded prize ("a free pint") — longer than "£250", so sized down to sit on
+// one line on a phone.
+.congrats-win__amount--phrase {
+	font-size: clamp(2.75rem, 15vw, 4.5rem);
+}
+
 .congrats-sub {
 	font-family: 'PepsiOwners-Compressed', sans-serif;
 	font-size: clamp(1rem, 5vw, 1.15rem);

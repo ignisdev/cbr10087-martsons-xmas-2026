@@ -58,6 +58,10 @@ $prize_phrase = function_exists( 'pf_format_prize_with_article' )
 			<img src="<?php echo esc_url( get_template_directory_uri() . '/src/images/marstons/thanks.png' ); ?>" alt="Thanks!" />
 		</h1>
 
+		<?php if ( $prize_type !== '' && function_exists( 'pf_prize_display_phrase' ) ) : ?>
+			<p class="congrats-sorry__sub">Congratulations on winning <br/><?php echo esc_html( pf_prize_display_phrase( $prize_type, $prize_name ) ); ?>.</p>
+		<?php endif; ?>
+
 		<?php if ( $is_cash ) : ?>
 		<p class="congrats-sorry__sub">YOUR PRIZE SHOULD BE WITH YOU WITHIN THE NEXT 24-48 HOURS.</p>
 		<p class="congrats-sorry__sub">IF YOU HAVEN’T RECEIVED IT WITHIN 48 HOURS, PLEASE CONTACT US ON:</p>
