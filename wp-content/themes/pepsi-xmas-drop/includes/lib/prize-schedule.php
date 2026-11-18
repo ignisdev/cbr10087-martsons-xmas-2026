@@ -18,8 +18,11 @@ defined( 'ABSPATH' ) || exit;
  * Re-runnable: without --wipe the build rebalances. Claimed rows and rows that
  * are live/reserved right now are never touched; every other unclaimed row
  * (expired-unwon or future) is re-spread across the remaining campaign, and the
- * tier is topped up (or trimmed) to `count − claimed`. The daily cron runs this
- * as the rollover so unwon slots aren't lost.
+ * tier is topped up (or trimmed) to `count − claimed`.
+ *
+ * The daily rollover cron is OFF by default: slot times come from the imported
+ * prize CSV and must stay as approved. Re-enable with
+ * add_filter( 'pf_prize_rollover_enabled', '__return_true' ).
  */
 
 const PF_PRIZE_ROLLOVER_HOOK = 'pf_prize_schedule_rollover';
@@ -424,19 +427,32 @@ function pf_prize_schedule_build( array $opts = [] ): array {
 	return $report;
 }
 
-// ─── Daily rollover ─────────────────────────────────────────────────────────
-// 06:30 site time, before the 07:00 window opens: re-spreads yesterday's unwon
-// slots (and the future ones, keeping the spacing even) across what's left.
+// ─── Daily rollover (disabled by default) ───────────────────────────────────
+// When enabled: 06:30 site time, before the 07:00 window opens, re-spreads
+// yesterday's unwon slots (and the future ones) across what's left. Disabled
+// because it would overwrite the CSV-imported slot times; while disabled the
+// cron event is unscheduled so nothing fires at all.
+
+function pf_prize_rollover_enabled(): bool {
+	return (bool) apply_filters( 'pf_prize_rollover_enabled', false );
+}
 
 add_action( 'init', function () {
-	if ( ! wp_next_scheduled( PF_PRIZE_ROLLOVER_HOOK ) ) {
+	$next = wp_next_scheduled( PF_PRIZE_ROLLOVER_HOOK );
+	if ( ! pf_prize_rollover_enabled() ) {
+		if ( $next ) {
+			wp_clear_scheduled_hook( PF_PRIZE_ROLLOVER_HOOK );
+		}
+		return;
+	}
+	if ( ! $next ) {
 		$first = new DateTimeImmutable( 'tomorrow 06:30', wp_timezone() );
 		wp_schedule_event( $first->getTimestamp(), 'daily', PF_PRIZE_ROLLOVER_HOOK );
 	}
 } );
 
 add_action( PF_PRIZE_ROLLOVER_HOOK, function () {
-	if ( ! (bool) apply_filters( 'pf_prize_rollover_enabled', true ) ) {
+	if ( ! pf_prize_rollover_enabled() ) {
 		return;
 	}
 	$cid   = function_exists( 'pf_resolve_competition_id' ) ? pf_resolve_competition_id() : 0;
@@ -722,8 +738,9 @@ function pf_prize_schedule_admin_render(): void {
 		</p>
 		<p class="description">
 			Without wipe this rebalances: claimed and currently-live slots are untouched; every other unclaimed slot is
-			re-spread across the remaining campaign and each tier is topped up to its target. The same rebalance runs
-			daily at 06:30 as the rollover for unwon slots.
+			re-spread across the remaining campaign and each tier is topped up to its target. This overwrites slot
+			times, so don't run it after a CSV import. The nightly rollover is
+			<strong><?php echo pf_prize_rollover_enabled() ? 'ON (06:30 daily)' : 'OFF'; ?></strong>.
 		</p>
 	</form>
 	<?php
