@@ -258,7 +258,7 @@ class BPM_CSV_Handler implements BPM_CSV_Handler_Interface {
         }
         
         // Read and validate headers
-        $headers = fgetcsv($handle);
+        $headers = fgetcsv($handle, null, ',', '"', '\\');
         if ($headers === false) {
             $errors[] = __('CSV file appears to be empty', 'britvic-promo');
             fclose($handle);
@@ -293,7 +293,7 @@ class BPM_CSV_Handler implements BPM_CSV_Handler_Interface {
         $row_count = 0;
         $max_rows_to_check = 100; // Sample validation
         
-        while (($row = fgetcsv($handle)) !== false && $row_count < $max_rows_to_check) {
+        while (($row = fgetcsv($handle, null, ',', '"', '\\')) !== false && $row_count < $max_rows_to_check) {
             $row_count++;
             
             if (count($row) !== count($headers)) {
@@ -335,20 +335,16 @@ class BPM_CSV_Handler implements BPM_CSV_Handler_Interface {
      * @throws Exception If parsing fails
      */
     public function parse_csv_file_with_mapping(string $file_path, array $column_mapping = [], array $custom_fields = [], string $import_type = 'standard'): array {
-        error_log('BPM CSV Parse - Column mapping received: ' . print_r($column_mapping, true));
-        error_log('BPM CSV Parse - Custom fields received: ' . print_r($custom_fields, true));
         $handle = fopen($file_path, 'r');
         if (!$handle) {
             throw new Exception(__('Cannot open CSV file for parsing', 'britvic-promo'));
         }
         
-        $headers = fgetcsv($handle);
+        $headers = fgetcsv($handle, null, ',', '"', '\\');
         if ($headers === false) {
             fclose($handle);
             throw new Exception(__('Cannot read CSV headers', 'britvic-promo'));
         }
-        
-        error_log('BPM CSV Parse - Raw CSV headers: ' . print_r($headers, true));
         
         // Clean headers (remove BOM and trim whitespace)
         $headers = array_map(function($header) {
@@ -366,7 +362,7 @@ class BPM_CSV_Handler implements BPM_CSV_Handler_Interface {
         $parsed_data = [];
         $row_count = 0;
         
-        while (($row = fgetcsv($handle)) !== false) {
+        while (($row = fgetcsv($handle, null, ',', '"', '\\')) !== false) {
             $row_count++;
             
             if (count($row) !== count($headers)) {
@@ -389,11 +385,9 @@ class BPM_CSV_Handler implements BPM_CSV_Handler_Interface {
                             // Special handling for 'code' field to preserve multiple codes
                             if ($field_name === 'code') {
                                 $mapped_data["code_{$code_counter}"] = $row_data[$header_key];
-                                error_log("BPM CSV Parse - Mapped column {$column_index} ({$header_key}) to field code_{$code_counter} with value: {$row_data[$header_key]}");
                                 $code_counter++;
                             } else {
                                 $mapped_data[$field_name] = $row_data[$header_key];
-                                error_log("BPM CSV Parse - Mapped column {$column_index} ({$header_key}) to field {$field_name} with value: {$row_data[$header_key]}");
                             }
                         }
                     }
@@ -433,6 +427,18 @@ class BPM_CSV_Handler implements BPM_CSV_Handler_Interface {
         }
         
         fclose($handle);
+
+        // One summary line per parse (not per cell) — and only while the PF
+        // debug panel is on, per the production logging rule.
+        if ( function_exists( 'pf_is_debug_panel_visible' ) && pf_is_debug_panel_visible() ) {
+            error_log( sprintf(
+                'BPM CSV Parse - %d rows parsed (%d read); mapping: %s',
+                count( $parsed_data ),
+                $row_count,
+                wp_json_encode( $column_mapping )
+            ) );
+        }
+
         return $parsed_data;
     }
     
@@ -450,7 +456,7 @@ class BPM_CSV_Handler implements BPM_CSV_Handler_Interface {
             throw new Exception(__('Cannot open CSV file for parsing', 'britvic-promo'));
         }
         
-        $headers = fgetcsv($handle);
+        $headers = fgetcsv($handle, null, ',', '"', '\\');
         if ($headers === false) {
             fclose($handle);
             throw new Exception(__('Cannot read CSV headers', 'britvic-promo'));
@@ -459,7 +465,7 @@ class BPM_CSV_Handler implements BPM_CSV_Handler_Interface {
         $parsed_data = [];
         $row_count = 0;
         
-        while (($row = fgetcsv($handle)) !== false) {
+        while (($row = fgetcsv($handle, null, ',', '"', '\\')) !== false) {
             $row_count++;
             
             if (count($row) !== count($headers)) {
@@ -817,7 +823,7 @@ class BPM_CSV_Handler implements BPM_CSV_Handler_Interface {
         }
         
         $count = 0;
-        while (fgetcsv($handle) !== false) {
+        while (fgetcsv($handle, null, ',', '"', '\\') !== false) {
             $count++;
         }
         
@@ -1151,6 +1157,133 @@ class BPM_CSV_Handler implements BPM_CSV_Handler_Interface {
         return $import_result;
     }
     
+    /** Rows per chunk for the admin chunked import (one AJAX request each). */
+    public const CHUNK_SIZE = 200;
+
+    /** How long a prepared import stays available between requests. */
+    private const CHUNK_TTL = 2 * HOUR_IN_SECONDS;
+
+    /**
+     * Chunked import, step 1: validate + parse the upload ONCE.
+     *
+     * Distribution, auto-date generation and sanitising (which also mints
+     * unique_ids) all run here over the whole file, so splitting the insert
+     * work into chunks can't change their outcome. Prepared rows are kept in
+     * per-chunk transients (not files — the upload dir is web-reachable on
+     * nginx) keyed by an unguessable token bound to the current user.
+     *
+     * @return array{token: string, total: int, chunks: int, chunk_size: int, warnings: array}
+     */
+    public function prepare_chunked_import(array $file_data, int $competition_id, array $column_mapping = [], array $custom_fields = [], string $import_type = 'standard'): array {
+        $this->validate_uploaded_file($file_data);
+        $temp_file = $this->handle_file_upload($file_data);
+
+        try {
+            $validation = $this->validate_csv_file($temp_file, 'prizes');
+            if (!$validation['valid']) {
+                throw new Exception(
+                    sprintf(__('CSV validation failed: %s', 'britvic-promo'), implode(', ', $validation['errors']))
+                );
+            }
+
+            $parsed = $this->parse_csv_file_with_mapping($temp_file, $column_mapping, $custom_fields, $import_type);
+            $parsed = $this->apply_prize_type_distribution($parsed, $competition_id);
+            $parsed = $this->apply_auto_date_generation($parsed, $competition_id);
+            $rows   = $this->sanitize_csv_data($parsed, 'prizes');
+        } finally {
+            if (file_exists($temp_file)) {
+                unlink($temp_file);
+            }
+        }
+
+        if (empty($rows)) {
+            throw new Exception(__('No importable rows found in the file.', 'britvic-promo'));
+        }
+
+        $token  = wp_generate_password(24, false, false);
+        $chunks = array_chunk($rows, self::CHUNK_SIZE);
+        foreach ($chunks as $i => $chunk) {
+            set_transient("bpm_imp_{$token}_{$i}", $chunk, self::CHUNK_TTL);
+        }
+        set_transient("bpm_imp_{$token}", [
+            'user_id'        => get_current_user_id(),
+            'competition_id' => $competition_id,
+            'total'          => count($rows),
+            'chunks'         => count($chunks),
+        ], self::CHUNK_TTL);
+
+        return [
+            'token'      => $token,
+            'total'      => count($rows),
+            'chunks'     => count($chunks),
+            'chunk_size' => self::CHUNK_SIZE,
+            'warnings'   => $validation['warnings'] ?? [],
+        ];
+    }
+
+    /**
+     * Chunked import, step 2: insert one prepared chunk.
+     * Existing prizes (same unique_id or code) are skipped, so a retried
+     * chunk never duplicates rows.
+     */
+    public function process_chunked_import(string $token, int $chunk): array {
+        $meta = $this->get_chunked_import_meta($token);
+        if ($chunk < 0 || $chunk >= (int) $meta['chunks']) {
+            throw new InvalidArgumentException(__('Invalid import chunk.', 'britvic-promo'));
+        }
+        $rows = get_transient("bpm_imp_{$token}_{$chunk}");
+        if (!is_array($rows)) {
+            throw new Exception(__('Import data expired — please upload the file again.', 'britvic-promo'));
+        }
+        $result = $this->process_prize_import_batches($rows, (int) $meta['competition_id']);
+        $result['chunk'] = $chunk;
+        return $result;
+    }
+
+    /**
+     * Chunked import, step 3: audit-log the totals and drop the transients.
+     */
+    public function finish_chunked_import(string $token, array $totals): array {
+        $meta = $this->get_chunked_import_meta($token);
+        for ($i = 0; $i < (int) $meta['chunks']; $i++) {
+            delete_transient("bpm_imp_{$token}_{$i}");
+        }
+        delete_transient("bpm_imp_{$token}");
+
+        $success = max(0, (int) ($totals['success_count'] ?? 0));
+        $errors  = max(0, (int) ($totals['error_count'] ?? 0));
+        $skipped = max(0, (int) ($totals['skipped_count'] ?? 0));
+
+        BPM_Audit_Logger::log(
+            (int) $meta['competition_id'],
+            'csv_import',
+            sprintf('Imported prizes: %d successful, %d failed, %d skipped', $success, $errors, $skipped),
+            'info',
+            ['total_rows' => (int) $meta['total'], 'chunks' => (int) $meta['chunks'], 'mode' => 'chunked']
+        );
+
+        return [
+            'success_count'   => $success,
+            'error_count'     => $errors,
+            'skipped_count'   => $skipped,
+            'total_processed' => (int) $meta['total'],
+        ];
+    }
+
+    private function get_chunked_import_meta(string $token): array {
+        if (!preg_match('/^[A-Za-z0-9]{24}$/', $token)) {
+            throw new InvalidArgumentException(__('Invalid import token.', 'britvic-promo'));
+        }
+        $meta = get_transient("bpm_imp_{$token}");
+        if (!is_array($meta)) {
+            throw new Exception(__('Import data expired — please upload the file again.', 'britvic-promo'));
+        }
+        if ((int) $meta['user_id'] !== get_current_user_id()) {
+            throw new Exception(__('This import belongs to another user.', 'britvic-promo'));
+        }
+        return $meta;
+    }
+
     /**
      * Prepare uploaded file for batch processing
      */
@@ -1169,10 +1302,10 @@ class BPM_CSV_Handler implements BPM_CSV_Handler_Interface {
         }
         
         // Skip header row
-        fgetcsv($handle);
+        fgetcsv($handle, null, ',', '"', '\\');
         
         $count = 0;
-        while (fgetcsv($handle) !== false) {
+        while (fgetcsv($handle, null, ',', '"', '\\') !== false) {
             $count++;
         }
         

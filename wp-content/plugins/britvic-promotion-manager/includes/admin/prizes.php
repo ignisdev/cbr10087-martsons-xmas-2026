@@ -3599,6 +3599,14 @@ jQuery(document).ready(function(jQuery) {
         jQuery('#import-controls').hide();
         jQuery('#import-progress').show();
         
+        // CSV: chunked import — one request prepares the file, then each
+        // chunk of rows is its own short request, so a large file can never
+        // hit the server's FastCGI timeout. Real progress, no simulation.
+        if (isCSV) {
+            runChunkedCsvImport(formData, button);
+            return;
+        }
+
         // Start progress simulation
         simulateImportProgress();
         
@@ -3652,6 +3660,81 @@ jQuery(document).ready(function(jQuery) {
             }
         });
     });
+
+    function runChunkedCsvImport(formData, button) {
+        var nonce = '<?php echo wp_create_nonce('bpm_nonce'); ?>';
+        var totals = { success_count: 0, error_count: 0, skipped_count: 0 };
+        var errors = [];
+
+        function setProgress(pct, text, status) {
+            jQuery('#progress-bar').css('width', pct + '%');
+            jQuery('#progress-percentage').text(pct + '%');
+            if (text) { jQuery('#progress-text').text(text); }
+            if (status) { jQuery('#progress-status').text(status); }
+        }
+        function fail(message) {
+            setProgress(100, '<?php echo esc_js(__('Import failed', 'britvic-promo')); ?>', message);
+            setTimeout(function() { resetImportUI(button); }, 4000);
+        }
+        function ajaxError(xhr, label) {
+            return label + ' (' + (xhr && xhr.status ? 'HTTP ' + xhr.status : '<?php echo esc_js(__('network error', 'britvic-promo')); ?>') + ')';
+        }
+
+        formData.set('action', 'bpm_import_csv_start');
+        setProgress(2, '<?php echo esc_js(__('Uploading and preparing file...', 'britvic-promo')); ?>', '<?php echo esc_js(__('Validating rows', 'britvic-promo')); ?>');
+
+        jQuery.ajax({ url: ajaxurl, type: 'POST', data: formData, processData: false, contentType: false })
+            .done(function(res) {
+                if (!res || !res.success) {
+                    fail((res && res.data && res.data.message) || '<?php echo esc_js(__('Could not prepare the file', 'britvic-promo')); ?>');
+                    return;
+                }
+                var job = res.data;
+                runChunk(job, 0, 0);
+            })
+            .fail(function(xhr) { fail(ajaxError(xhr, '<?php echo esc_js(__('Upload failed', 'britvic-promo')); ?>')); });
+
+        function runChunk(job, chunk, attempt) {
+            if (chunk >= job.chunks) { finish(job); return; }
+            var done = Math.min(chunk * job.chunk_size, job.total);
+            setProgress(Math.max(5, Math.round(done / job.total * 95)),
+                '<?php echo esc_js(__('Importing prizes...', 'britvic-promo')); ?>',
+                done + ' / ' + job.total + ' <?php echo esc_js(__('rows', 'britvic-promo')); ?>');
+
+            jQuery.post(ajaxurl, { action: 'bpm_import_csv_batch', nonce: nonce, token: job.token, chunk: chunk })
+                .done(function(res) {
+                    if (!res || !res.success) {
+                        fail((res && res.data && res.data.message) || '<?php echo esc_js(__('Batch failed', 'britvic-promo')); ?>');
+                        return;
+                    }
+                    totals.success_count += res.data.success_count || 0;
+                    totals.error_count   += res.data.error_count || 0;
+                    totals.skipped_count += res.data.skipped_count || 0;
+                    if (res.data.errors && res.data.errors.length) { errors = errors.concat(res.data.errors); }
+                    runChunk(job, chunk + 1, 0);
+                })
+                .fail(function(xhr) {
+                    // Retrying is safe: rows already written are skipped by code.
+                    if (attempt < 2) {
+                        setTimeout(function() { runChunk(job, chunk, attempt + 1); }, 2000);
+                    } else {
+                        fail(ajaxError(xhr, '<?php echo esc_js(__('Batch', 'britvic-promo')); ?> ' + (chunk + 1) + '/' + job.chunks + ' <?php echo esc_js(__('failed — re-upload the file to resume (existing rows are skipped)', 'britvic-promo')); ?>'));
+                    }
+                });
+        }
+
+        function finish(job) {
+            jQuery.post(ajaxurl, jQuery.extend({ action: 'bpm_import_csv_finish', nonce: nonce, token: job.token }, totals))
+                .always(function() {
+                    var summary = totals.success_count + ' <?php echo esc_js(__('imported', 'britvic-promo')); ?>, '
+                        + totals.skipped_count + ' <?php echo esc_js(__('skipped (already present)', 'britvic-promo')); ?>, '
+                        + totals.error_count + ' <?php echo esc_js(__('failed', 'britvic-promo')); ?>';
+                    if (errors.length) { console.warn('BPM import row errors:', errors); }
+                    setProgress(100, totals.error_count ? '<?php echo esc_js(__('Import finished with errors', 'britvic-promo')); ?>' : '<?php echo esc_js(__('Import completed!', 'britvic-promo')); ?>', summary);
+                    setTimeout(function() { location.reload(); }, totals.error_count ? 6000 : 2500);
+                });
+        }
+    }
 
     // Comprehensive prize sync - combines both table sync and claims sync
     jQuery('#sync-prizes').on('click', function() {

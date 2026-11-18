@@ -82,6 +82,9 @@ final class BritvicPromotionManager {
         add_action('wp_ajax_bpm_toggle_pages', [$this, 'handle_ajax_toggle_pages']);
         add_action('wp_ajax_bpm_export_csv', [$this, 'handle_ajax_export_csv']);
         add_action('wp_ajax_bpm_import_csv', [$this, 'handle_ajax_import_csv']);
+        add_action('wp_ajax_bpm_import_csv_start', [$this, 'handle_ajax_import_csv_start']);
+        add_action('wp_ajax_bpm_import_csv_batch', [$this, 'handle_ajax_import_csv_batch']);
+        add_action('wp_ajax_bpm_import_csv_finish', [$this, 'handle_ajax_import_csv_finish']);
         add_action('wp_ajax_bpm_import_xlsx', [$this, 'handle_ajax_import_xlsx']);
         add_action('wp_ajax_bpm_analyze_xlsx', [$this, 'handle_ajax_analyze_xlsx']);
         add_action('wp_ajax_bpm_analyze_csv', [$this, 'handle_ajax_analyze_csv']);
@@ -552,6 +555,74 @@ final class BritvicPromotionManager {
     }
     
     /**
+     * Chunked CSV import (step 1/3): upload, validate and prepare the file.
+     * Splitting the insert work across requests keeps every request well
+     * inside the web server's FastCGI timeout, whatever the file size.
+     */
+    public function handle_ajax_import_csv_start(): void {
+        try {
+            check_ajax_referer('bpm_nonce', 'nonce');
+            if (!current_user_can('manage_options')) {
+                throw new Exception(__('Insufficient permissions', 'britvic-promo'));
+            }
+            if (!isset($_FILES['csv_file'])) {
+                throw new InvalidArgumentException(__('No file uploaded', 'britvic-promo'));
+            }
+            $column_mapping = json_decode(stripslashes($_POST['column_mapping'] ?? '{}'), true) ?: [];
+            $custom_fields  = json_decode(stripslashes($_POST['custom_fields'] ?? '{}'), true) ?: [];
+
+            $csv_handler = new BPM_CSV_Handler();
+            wp_send_json_success($csv_handler->prepare_chunked_import(
+                $_FILES['csv_file'],
+                (int) ($_POST['competition_id'] ?? 0),
+                $column_mapping,
+                $custom_fields,
+                sanitize_text_field($_POST['import_type'] ?? 'standard')
+            ));
+        } catch (Exception $e) {
+            wp_send_json_error(['message' => $e->getMessage()]);
+        }
+    }
+
+    /** Chunked CSV import (step 2/3): insert one prepared chunk. */
+    public function handle_ajax_import_csv_batch(): void {
+        try {
+            check_ajax_referer('bpm_nonce', 'nonce');
+            if (!current_user_can('manage_options')) {
+                throw new Exception(__('Insufficient permissions', 'britvic-promo'));
+            }
+            $csv_handler = new BPM_CSV_Handler();
+            wp_send_json_success($csv_handler->process_chunked_import(
+                sanitize_text_field(wp_unslash($_POST['token'] ?? '')),
+                (int) ($_POST['chunk'] ?? -1)
+            ));
+        } catch (Exception $e) {
+            wp_send_json_error(['message' => $e->getMessage()]);
+        }
+    }
+
+    /** Chunked CSV import (step 3/3): audit-log totals and clean up. */
+    public function handle_ajax_import_csv_finish(): void {
+        try {
+            check_ajax_referer('bpm_nonce', 'nonce');
+            if (!current_user_can('manage_options')) {
+                throw new Exception(__('Insufficient permissions', 'britvic-promo'));
+            }
+            $csv_handler = new BPM_CSV_Handler();
+            wp_send_json_success($csv_handler->finish_chunked_import(
+                sanitize_text_field(wp_unslash($_POST['token'] ?? '')),
+                [
+                    'success_count' => (int) ($_POST['success_count'] ?? 0),
+                    'error_count'   => (int) ($_POST['error_count'] ?? 0),
+                    'skipped_count' => (int) ($_POST['skipped_count'] ?? 0),
+                ]
+            ));
+        } catch (Exception $e) {
+            wp_send_json_error(['message' => $e->getMessage()]);
+        }
+    }
+
+    /**
      * Handle XLSX file import with column mapping
      */
     public function handle_ajax_import_xlsx(): void {
@@ -636,7 +707,7 @@ final class BritvicPromotionManager {
             }
             
             // Read headers (first row)
-            $headers = fgetcsv($file_handle);
+            $headers = fgetcsv($file_handle, null, ',', '"', '\\');
             if (!$headers) {
                 throw new Exception(__('CSV file appears to be empty or invalid', 'britvic-promo'));
             }
@@ -644,7 +715,7 @@ final class BritvicPromotionManager {
             // Read sample data (next 5 rows)
             $sample_data = [];
             for ($i = 0; $i < 5; $i++) {
-                $row = fgetcsv($file_handle);
+                $row = fgetcsv($file_handle, null, ',', '"', '\\');
                 if ($row !== false) {
                     $sample_data[] = $row;
                 }
@@ -652,9 +723,9 @@ final class BritvicPromotionManager {
             
             // Count total rows (rewind and count all data rows)
             rewind($file_handle);
-            fgetcsv($file_handle); // Skip header row
+            fgetcsv($file_handle, null, ',', '"', '\\'); // Skip header row
             $total_rows = 0;
-            while (fgetcsv($file_handle) !== false) {
+            while (fgetcsv($file_handle, null, ',', '"', '\\') !== false) {
                 $total_rows++;
             }
             
@@ -2173,7 +2244,7 @@ final class BritvicPromotionManager {
                 $table = $wpdb->prefix . 'bpm_user_blocks';
                 
                 // Read header row
-                $headers = fgetcsv($handle);
+                $headers = fgetcsv($handle, null, ',', '"', '\\');
                 if (!$headers) {
                     throw new Exception(__('Empty CSV file or invalid format', 'britvic-promo'));
                 }
@@ -2189,7 +2260,7 @@ final class BritvicPromotionManager {
                 }
                 
                 $line_number = 2; // Start from 2 (after header)
-                while (($data = fgetcsv($handle)) !== FALSE) {
+                while (($data = fgetcsv($handle, null, ',', '"', '\\')) !== FALSE) {
                     try {
                         if (count($data) < count($required_columns)) {
                             $errors[] = sprintf(__('Line %d: Not enough columns', 'britvic-promo'), $line_number);
