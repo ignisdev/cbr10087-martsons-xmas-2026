@@ -1,5 +1,5 @@
 /**
- * Pepsi Xmas Drop — game sound effects.
+ * Marstons Xmas Drop — game sound effects.
  *
  * Web Audio API wrapper (rather than HTMLAudioElement) so each one-shot
  * decodes once at boot and plays with ~zero scheduling latency on mobile —

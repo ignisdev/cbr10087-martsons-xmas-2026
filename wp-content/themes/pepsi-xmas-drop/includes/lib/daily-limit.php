@@ -1,6 +1,6 @@
 <?php
 /**
- * Pepsi Xmas Drop integration shim for BPM's per-player daily play limit.
+ * Marstons Xmas Drop integration shim for BPM's per-player daily play limit.
  *
  * The schema, table, count/record helpers, and daily cleanup cron all live in
  * the BPM plugin (`BPM_Play_Limit`) — see

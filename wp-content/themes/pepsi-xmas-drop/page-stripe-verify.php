@@ -26,7 +26,7 @@ get_header();
 
 		<h1 class="page-stripe-verify__title">One more step <br/>to claim your prize</h1>
 
-		<p>We need to verify your identity before we can send your Pepsi Xmas Drop cash prize. It only takes a moment, tap the button below to complete the final step.</p>
+		<p>We need to verify your identity before we can send your Mastons Xmas Drop cash prize. It only takes a moment, tap the button below to complete the final step.</p>
 
 		<?php if ( $verify_link !== '' ) : ?>
 			<a href="<?php echo $verify_link; ?>" class="pepsi-pill-button page-stripe-verify__cta">

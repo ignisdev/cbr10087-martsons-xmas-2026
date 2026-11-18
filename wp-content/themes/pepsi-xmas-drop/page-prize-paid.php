@@ -32,7 +32,7 @@ get_header();
 		<p class="congrats-sorry__sub">YOUR PRIZE SHOULD BE WITH YOU WITHIN THE NEXT 24-48 HOURS.</p>
 		<p class="congrats-sorry__sub">IF YOU HAVEN’T RECEIVED IT WITHIN 48 HOURS, PLEASE CONTACT US ON:</p>
 		<p class="congrats-sorry__sub"><a href="mailto:help@britvic.promo">help@britvic.promo</a></p>
-		<p class="congrats-sorry__sub">PEPSI</p>
+		<p class="congrats-sorry__sub">Martsons</p>
 	</div>
 </main>
 

@@ -2,7 +2,7 @@
   "name": "pepsi-xmas-drop",
   "version": "1.0.0",
   "private": true,
-  "description": "Pepsi Xmas Drop promotional game — Three.js + GSAP + Vite",
+  "description": "Marstons Xmas Drop promotional game — Three.js + GSAP + Vite",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

@@ -1,6 +1,6 @@
 {
   "name": "britvic/pepsi-xmas-drop-theme",
-  "description": "Pepsi Xmas Drop theme dependencies",
+  "description": "Marstons Xmas Drop theme dependencies",
   "type": "project",
   "require": {
     "stripe/stripe-php": "^14.0"

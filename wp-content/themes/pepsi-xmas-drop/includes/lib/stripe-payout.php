@@ -763,9 +763,9 @@ function pf_get_stripe_business_profile(): array {
 	$support_phone = apply_filters( 'pf_stripe_support_phone', '+442073856677' );  // E.164 — UK trunk '(0)' is dropped in international format
 
 	$profile = [
-		'name'                => 'Pepsi Xmas Drop',
+		'name'                => 'Marstons Xmas Drop',
 		'mcc'                 => '7999',  // Recreation Services NEC — promotional sweepstakes prize payouts
-		'product_description' => 'Promotional prize reimbursement payouts for Pepsi winners in the United Kingdom. Eligible winners of the Pepsi Xmas Drop instant-win game receive a one-time cash prize.',
+		'product_description' => 'Promotional prize reimbursement payouts for Pepsi winners in the United Kingdom. Eligible winners of the Marstons Xmas Drop instant-win game receive a one-time cash prize.',
 		'url'                 => $site_url,
 		'support_url'         => $site_url,
 		'support_email'       => apply_filters( 'pf_stripe_support_email', 'help@britvic.promo' ),
@@ -926,7 +926,7 @@ function pf_process_claim_submission_and_get_redirect( array $entry ): string {
 			$individual['dob'] = $dob;
 		}
 		$business_profile = pf_get_stripe_business_profile();
-		// Override the default 'Pepsi Xmas Drop' name with the winner's own
+		// Override the default 'Marstons Xmas Drop' name with the winner's own
 		// first + last name so the Stripe Express account is identifiable as
 		// the recipient rather than the platform.
 		$winner_name = trim( $first_name . ' ' . $last_name );
@@ -2344,7 +2344,7 @@ function pf_v2_execute_payout(
 		'from'        => [ 'financial_account' => $fa_id, 'currency' => 'gbp' ],
 		'to'          => [ 'recipient' => $account_id, 'payout_method' => $gbba_id, 'currency' => 'gbp' ],
 		'amount'      => [ 'value' => $amount_pence, 'currency' => 'gbp' ],
-		'description' => 'Pepsi Xmas Drop 2026 prize – GF entry #' . $gf_entry_id,
+		'description' => 'Marstons Xmas Drop 2026 prize – GF entry #' . $gf_entry_id,
 		'metadata'    => [
 			'prize_entry_id' => (string) $prize_entry_id,
 			'gf_entry_id'    => (string) $gf_entry_id,

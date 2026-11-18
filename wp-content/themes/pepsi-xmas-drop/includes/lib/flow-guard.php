@@ -1,6 +1,6 @@
 <?php
 /**
- * Pepsi Xmas Drop flow guard.
+ * Marstons Xmas Drop flow guard.
  *
  * One source of truth for user-journey gating, driven by the BPM Brand
  * Config "Page Flow" admin UI (Brand Config → Page Flow tab). That tab
@@ -44,7 +44,7 @@ function pf_flow_template_steps(): array {
 		'page-photo.php'           => 'photo',
 		'page-how-to-play.php'     => 'how-to-play',
 		'page-game.php'            => 'game',
-		// Pepsi Xmas Drop names the winner page "congratulations" in BPM Page
+		// Marstons Xmas Drop names the winner page "congratulations" in BPM Page
 		// Flow. If your BPM flow uses the default 'winner' slug instead,
 		// change the value below to 'winner' to match.
 		'page-congratulations.php' => 'congratulations',

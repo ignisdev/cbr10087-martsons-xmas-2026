@@ -71,7 +71,7 @@ get_header();
 	</div>
 <?php endif; ?>
 
-<main class="game-page page-game" data-js="game-page" aria-label="Pepsi Xmas Drop" style="<?php echo esc_attr( '--game-bg: url(' . pf_game_background_url() . ')' ); ?>">
+<main class="game-page page-game" data-js="game-page" aria-label="Marstons Xmas Drop" style="<?php echo esc_attr( '--game-bg: url(' . pf_game_background_url() . ')' ); ?>">
 
 	<!-- Game loader — in the HTML so it works before any JS has run, but
 	     deferred: it only fades in if boot is still going after 0.4s (slow
