@@ -506,10 +506,13 @@ function render_column_content($prize, $column_key, $column_info, $mapped_data, 
 
         case 'prize_type':
             // Authoritative prize_type from wp_bpm_prize_entries.prize_type.
-            // Only `cash` and `merch` are valid values; anything else is a
-            // distribution-overwrite or import-mapping bug surfacing here as
-            // an em-dash so it's visible at a glance.
+            // Valid values are `cash`, `merch` and tiered `cash_N` (shown as
+            // "Cash £N"); anything else is an import-mapping problem and is
+            // shown raw with a warning tooltip so it's visible at a glance.
             $entry_prize_type = isset($bpm_entry['prize_type']) ? strtolower((string) $bpm_entry['prize_type']) : '';
+            if (preg_match('/^cash_(\d+)$/', $entry_prize_type, $tier_m)) {
+                return '<span class="bpm-prize-type-cash">' . esc_html(sprintf(__('Cash £%s', 'britvic-promo'), number_format_i18n((int) $tier_m[1]))) . '</span>';
+            }
             switch ($entry_prize_type) {
                 case 'cash':
                     return '<span class="bpm-prize-type-cash">' . esc_html__('Cash', 'britvic-promo') . '</span>';
@@ -533,7 +536,7 @@ function render_column_content($prize, $column_key, $column_info, $mapped_data, 
                 if ($prize_type === 'merch') {
                     $label = __('Manual', 'britvic-promo');
                     $css   = 'bpm-payout-manual';
-                } elseif ($prize_type === 'cash') {
+                } elseif ($prize_type === 'cash' || str_starts_with($prize_type, 'cash_')) {
                     $label = '—';
                     $css   = 'bpm-payout-none';
                 } else {
@@ -2833,15 +2836,25 @@ jQuery(document).ready(function(jQuery) {
         // column, not a prize-name column. Without this, that CSV shape gets
         // auto-mapped to prize_name_from_distribution and the value is silently
         // overwritten if any distribution config is configured on the comp.
+        // Type values are detected from the data, not a fixed list: `cash`,
+        // `merch` or a tiered slug like `cash_10` / `cash_250`.
         var sampleLower = (typeof sampleData === 'string' ? sampleData : '').trim().toLowerCase();
-        var sampleIsTypeValue = sampleLower === 'cash' || sampleLower === 'merch';
+        var sampleHasData = sampleLower !== '' && sampleLower !== '<?php echo esc_js(strtolower(__('N/A', 'britvic-promo'))); ?>';
+        var sampleIsTypeValue = /^(cash|merch)(_[a-z0-9]+)*$/.test(sampleLower);
         var isPrizeTypeCol = headerLower === 'prize_type'
             || headerLower === 'type'
-            || (headerLower === 'prize' && sampleIsTypeValue);
-        var isPrizeValueCol = headerLower === 'prize_value' || headerLower === 'prize_name';
+            || (headerLower.includes('prize') && sampleIsTypeValue);
+        // A prize-ish column that carries real (non-type) data is the prize
+        // NAME from the file. "Prize Name (from Prize Type)" distribution is
+        // only defaulted for an empty column — otherwise a configured
+        // merch/cash distribution silently overwrites the CSV's names.
+        var isPrizeValueCol = !isPrizeTypeCol && (
+            headerLower === 'prize_value' || headerLower === 'prize_name'
+            || (headerLower.includes('prize') && sampleHasData)
+        );
         select += '<option value="_ignore"><?php _e('Ignore this column', 'britvic-promo'); ?></option>';
         select += '<option value="code" ' + (headerLower.includes('code') ? 'selected' : '') + '><?php _e('Prize Code', 'britvic-promo'); ?></option>';
-        select += '<option value="prize_type_from_file" ' + (isPrizeTypeCol ? 'selected' : '') + '><?php _e('Prize Type (from import: cash/merch)', 'britvic-promo'); ?></option>';
+        select += '<option value="prize_type_from_file" ' + (isPrizeTypeCol ? 'selected' : '') + '><?php _e('Prize Type (from import)', 'britvic-promo'); ?></option>';
         select += '<option value="prize_name_from_file" ' + (isPrizeValueCol ? 'selected' : '') + '><?php _e('Prize Name (from import)', 'britvic-promo'); ?></option>';
         select += '<option value="prize_name_from_distribution" ' + (!isPrizeTypeCol && !isPrizeValueCol && headerLower.includes('prize') ? 'selected' : '') + '><?php _e('Prize Name (from Prize Type)', 'britvic-promo'); ?></option>';
         select += '<option value="value" ' + (!isPrizeValueCol && headerLower.includes('value') ? 'selected' : '') + '><?php _e('Prize Value', 'britvic-promo'); ?></option>';
@@ -2905,7 +2918,7 @@ jQuery(document).ready(function(jQuery) {
         var fieldSelect = jQuery('<select class="field-name-select" style="width: 100%;"></select>');
         fieldSelect.append('<option value="_ignore"><?php _e('Ignore this field', 'britvic-promo'); ?></option>');
         fieldSelect.append('<option value="code"><?php _e('Prize Code', 'britvic-promo'); ?></option>');
-        fieldSelect.append('<option value="prize_type_from_file"><?php _e('Prize Type (from import: cash/merch)', 'britvic-promo'); ?></option>');
+        fieldSelect.append('<option value="prize_type_from_file"><?php _e('Prize Type (from import)', 'britvic-promo'); ?></option>');
         fieldSelect.append('<option value="prize_name_from_file" selected><?php _e('Prize Name (from import)', 'britvic-promo'); ?></option>');
         fieldSelect.append('<option value="prize_name_from_distribution"><?php _e('Prize Name (from Prize Type)', 'britvic-promo'); ?></option>');
         fieldSelect.append('<option value="value"><?php _e('Prize Value', 'britvic-promo'); ?></option>');
@@ -3052,6 +3065,13 @@ jQuery(document).ready(function(jQuery) {
             if (header && fieldSelect.length > 0) {
                 var headerLower = header.toLowerCase();
                 
+                // Explicit type columns win outright — 'prize_type' contains
+                // 'prize' and would otherwise be caught by the name patterns.
+                if (headerLower === 'prize_type' || headerLower === 'type') {
+                    fieldSelect.val('prize_type_from_file');
+                    return;
+                }
+
                 // Check each mapping pattern
                 Object.keys(autoMappings).forEach(function(fieldType) {
                     var patterns = autoMappings[fieldType];

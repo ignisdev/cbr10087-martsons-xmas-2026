@@ -1332,12 +1332,12 @@ class BPM_CSV_Handler implements BPM_CSV_Handler_Interface {
         $route_raw = strtolower( trim( (string) ( $prize_data['source_route'] ?? '' ) ) );
         $source_route = in_array( $route_raw, [ 'main', 'alt', 'both' ], true ) ? $route_raw : 'both';
 
-        // prize_type = 'cash' or 'merch' (drives Stripe-vs-merch routing in the theme).
-        // Source key is `prize_type_from_file` — set by the admin import UI's
-        // "Prize Type (cash/merch)" mapping option (see prizes.php field-name-select).
+        // prize_type drives Stripe-vs-merch routing in the theme: 'merch', 'cash'
+        // or a tiered cash type such as 'cash_10' / 'cash_250' (the theme maps
+        // the tier to an amount). Source key is `prize_type_from_file` — set by
+        // the admin import UI's "Prize Type (from import)" mapping option.
         // prize_name = human-readable label (e.g. 'Pepsi Max Pint', 'T-shirt') for display.
-        $raw_prize_type = strtolower( trim( (string) ( $prize_data['prize_type_from_file'] ?? '' ) ) );
-        $resolved_prize_type = in_array( $raw_prize_type, [ 'cash', 'merch' ], true ) ? $raw_prize_type : 'merch';
+        $resolved_prize_type = self::resolve_import_prize_type( $prize_data['prize_type_from_file'] ?? '' ) ?? 'merch';
 
         $entry_data = [
             'competition_id' => $competition_id,
@@ -1393,6 +1393,23 @@ class BPM_CSV_Handler implements BPM_CSV_Handler_Interface {
     }
     
     /**
+     * Normalise a prize type read from an import file.
+     *
+     * Accepts any clean slug (lowercase letters, digits, underscores; max 50
+     * chars) so tiered types like `cash_10` / `cash_250` survive the import
+     * alongside plain `cash` / `merch`. Returns null for empty or malformed
+     * values so the caller can apply its own fallback.
+     */
+    public static function resolve_import_prize_type( $value ): ?string {
+        $type = strtolower( trim( (string) $value ) );
+        $type = preg_replace( '/[\s\-]+/', '_', $type );
+        if ( $type === '' || ! preg_match( '/^[a-z][a-z0-9_]{0,49}$/', $type ) ) {
+            return null;
+        }
+        return $type;
+    }
+
+    /**
      * Set meta fields that the prizes display expects
      * Maps CSV data to the specific fields the frontend looks for
      */
@@ -1415,10 +1432,10 @@ class BPM_CSV_Handler implements BPM_CSV_Handler_Interface {
             update_post_meta($post_id, 'prize', $prize_name);
         }
 
-        // Cash/merch kind — used by the Stripe-vs-merch routing in the theme.
-        // Sourced from the import UI's "Prize Type (cash/merch)" mapping.
-        $raw_kind = strtolower( trim( (string) ( $prize_data['prize_type_from_file'] ?? '' ) ) );
-        if ( in_array( $raw_kind, [ 'cash', 'merch' ], true ) ) {
+        // Prize kind (merch / cash / cash_N) — used by the Stripe-vs-merch
+        // routing in the theme. Sourced from the "Prize Type (from import)" mapping.
+        $raw_kind = self::resolve_import_prize_type( $prize_data['prize_type_from_file'] ?? '' );
+        if ( $raw_kind !== null ) {
             update_post_meta($post_id, 'prize_type', $raw_kind);
         }
         
