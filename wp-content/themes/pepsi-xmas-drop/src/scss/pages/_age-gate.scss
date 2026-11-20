@@ -14,7 +14,7 @@
 
 .page-age-gate {
 	position: relative;
-	height: 100dvh;
+	height: var(--pf-vh);
 	box-sizing: border-box;
 	margin-top: calc(-1 * var(--pf-header-h));
 	margin-bottom: calc(-1 * var(--pf-bottom-reserve));
@@ -57,7 +57,7 @@
    bg), and it can be taller than the stage on small screens — let it scroll. */
 .page-age-gate:has(.page-age-gate__form.is-step-contact) {
 	height: auto;
-	min-height: 100dvh;
+	min-height: var(--pf-vh);
 	overflow: visible;
 	background-image: var(--age-gate-bg-contact, var(--age-gate-bg));
 	background-size: cover;

@@ -12,6 +12,10 @@
   --pf-button-bg: url('../images/marstons/3x/button_graphic.png') center / 100% 100% no-repeat;
   --pf-button-text: #000;
 
+  // Page height used by the stage pages (age gate, photo, game). Never below
+  // 646px — on shorter screens the page scrolls instead of shrinking.
+  --pf-vh: max(100dvh, 646px);
+
   // Site chrome (header banner / footer / CTA dock) — see base/_layout.scss.
   // Heights follow the artwork aspect ratios so the images never crop.
   --pf-page-w: min(100vw, 430px);
